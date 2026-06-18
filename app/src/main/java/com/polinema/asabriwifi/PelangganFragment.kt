@@ -66,7 +66,7 @@ class PelangganFragment : Fragment() {
         if (pelangganLama != null) {
             isEdit = true
             tvDialogTitle.text = "Edit Pelanggan"
-            layoutAkunBaru.visibility = View.GONE // Sembunyikan form email & password saat edit
+            layoutAkunBaru.visibility = View.GONE
 
             try {
                 pelangganId = pelangganLama.getString("id")
@@ -85,11 +85,11 @@ class PelangganFragment : Fragment() {
         val dialogBuilder = AlertDialog.Builder(requireContext())
             .setView(dialogView)
             .setPositiveButton("Simpan") { _, _ ->
-                val name = etName.text.toString()
-                val email = etEmail.text.toString()
-                val password = etPassword.text.toString()
-                val no_hp = etNoHp.text.toString()
-                val alamat = etAlamat.text.toString()
+                val name = etName.text.toString().trim()
+                val email = etEmail.text.toString().trim()
+                val password = etPassword.text.toString().trim()
+                val no_hp = etNoHp.text.toString().trim()
+                val alamat = etAlamat.text.toString().trim()
                 val statusPilihan = spinnerStatus.selectedItem.toString()
 
                 if (name.isEmpty() || no_hp.isEmpty()) {
@@ -112,14 +112,22 @@ class PelangganFragment : Fragment() {
             .setTitle("Hapus Pelanggan")
             .setMessage("Yakin ingin menghapus pelanggan ini?")
             .setPositiveButton("Ya, Hapus") { _, _ ->
-                val url = ApiConfig.BASE_URL + "pelanggan?aksi=hapus"
+                // 🚀 FIXED: Bersihkan URL murni tanpa query string ?aksi=hapus
+                val url = ApiConfig.BASE_URL + "pelanggan"
                 val stringRequest = object : StringRequest(Request.Method.POST, url,
                     { response ->
-                        if (JSONObject(response).getString("status") == "berhasil") fetchDataPelanggan()
+                        try {
+                            if (JSONObject(response).optString("status") == "berhasil") {
+                                Toast.makeText(requireContext(), "Pelanggan berhasil dihapus", Toast.LENGTH_SHORT).show()
+                                fetchDataPelanggan()
+                            }
+                        } catch (e: Exception) { e.printStackTrace() }
                     }, null
                 ) {
                     override fun getParams(): MutableMap<String, String> {
                         val params = HashMap<String, String>()
+                        // 🚀 FIXED: Masukkan aksi hapus ke dalam body data POST
+                        params["aksi"] = "hapus"
                         params["id"] = id
                         return params
                     }
@@ -131,7 +139,8 @@ class PelangganFragment : Fragment() {
 
     private fun kirimDataKeLaravel(isEdit: Boolean, id: String, name: String, email: String, pass: String, no_hp: String, alamat: String, statusPilihan: String) {
         val aksi = if (isEdit) "edit" else "tambah"
-        val url = ApiConfig.BASE_URL + "pelanggan?aksi=$aksi"
+        // 🚀 FIXED: URL bersih tanpa query string agar tidak di-strip oleh Volley
+        val url = ApiConfig.BASE_URL + "pelanggan"
 
         val stringRequest = object : StringRequest(Request.Method.POST, url,
             { response ->
@@ -153,6 +162,8 @@ class PelangganFragment : Fragment() {
         ) {
             override fun getParams(): MutableMap<String, String> {
                 val params = HashMap<String, String>()
+                // 🚀 FIXED: Amankan pengiriman aksi manipulasi database
+                params["aksi"] = aksi
                 if (isEdit) {
                     params["id"] = id
                 } else {
@@ -169,7 +180,8 @@ class PelangganFragment : Fragment() {
     }
 
     private fun updateStatusKhusus(id: String, statusPilihan: String) {
-        val url = ApiConfig.BASE_URL + "pelanggan?aksi=toggle_status"
+        // 🚀 FIXED: URL bersih tanpa query string
+        val url = ApiConfig.BASE_URL + "pelanggan"
         val stringRequest = object : StringRequest(Request.Method.POST, url,
             { response ->
                 Toast.makeText(requireContext(), "Data & Status berhasil diperbarui!", Toast.LENGTH_SHORT).show()
@@ -179,6 +191,8 @@ class PelangganFragment : Fragment() {
         ) {
             override fun getParams(): MutableMap<String, String> {
                 val params = HashMap<String, String>()
+                // 🚀 FIXED: Set aksi toggle_status melalui form-data POST
+                params["aksi"] = "toggle_status"
                 params["id"] = id
                 params["status"] = statusPilihan
                 return params
@@ -188,14 +202,12 @@ class PelangganFragment : Fragment() {
     }
 
     private fun fetchDataPelanggan() {
+        // 🚀 AMAN: GET request diperbolehkan memakai query string secara natural
         val url = ApiConfig.BASE_URL + "pelanggan?aksi=tampil"
 
         val stringRequest = StringRequest(Request.Method.GET, url,
             { response ->
                 try {
-                    println("====== HASIL DARI LARAVEL (PELANGGAN) ======")
-                    println(response)
-
                     listPelanggan.clear()
                     val jsonObject = JSONObject(response)
                     if (jsonObject.getString("status") == "berhasil") {
@@ -220,9 +232,7 @@ class PelangganFragment : Fragment() {
             },
             { error ->
                 if (isAdded) Toast.makeText(requireContext(), "Gagal konek ke server", Toast.LENGTH_SHORT).show()
-                println("====== ERROR KONEKSI PELANGGAN ======")
 
-                // 👇 BLOK PENDETEKSI ERROR CANGGIH 👇
                 val networkResponse = error.networkResponse
                 if (networkResponse != null && networkResponse.data != null) {
                     try {
@@ -232,8 +242,6 @@ class PelangganFragment : Fragment() {
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
-                } else {
-                    println("Error internal Volley/Koneksi mati: ${error.message}")
                 }
             }
         )

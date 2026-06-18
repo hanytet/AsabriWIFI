@@ -10,7 +10,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Login Admin"
+        android:text="Login Portal"
         android:textSize="28sp"
         android:textStyle="bold"
         android:textColor="#333333"
@@ -24,12 +24,22 @@
         android:textColor="#666666"
         android:layout_marginBottom="32dp" />
 
-    <EditText
+        <EditText
         android:id="@+id/etEmail"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:hint="Email"
         android:inputType="textEmailAddress"
+        android:background="@android:drawable/editbox_background"
+        android:padding="12dp"
+        android:layout_marginBottom="16dp" />
+
+    <EditText
+        android:id="@+id/etNik"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="NIK (KTP Pelanggan)"
+        android:inputType="number"
         android:background="@android:drawable/editbox_background"
         android:padding="12dp"
         android:layout_marginBottom="16dp" />

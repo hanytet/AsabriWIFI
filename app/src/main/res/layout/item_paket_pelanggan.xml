@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@android:drawable/dialog_holo_light_frame"
+    android:padding="16dp"
+    android:layout_marginBottom="12dp">
+
+    <TextView
+        android:id="@+id/itemNamaPaket"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nama Paket"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#0066CC" />
+
+    <TextView
+        android:id="@+id/itemKecepatan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="00 Mbps"
+        android:textSize="15sp"
+        android:textColor="#2E7D32"
+        android:textStyle="bold"
+        android:layout_marginTop="2dp" />
+
+    <TextView
+        android:id="@+id/itemHarga"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rp 0 / bulan"
+        android:textSize="16sp"
+        android:textColor="#333333"
+        android:layout_marginTop="8dp" />
+
+    <Button
+        android:id="@+id/itemBtnPilih"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="PILIH PAKET"
+        android:layout_marginTop="12dp"
+        android:backgroundTint="#0066CC"
+        android:textColor="#FFFFFF"/>
+
+</LinearLayout>

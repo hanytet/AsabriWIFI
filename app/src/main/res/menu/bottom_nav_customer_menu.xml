@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@android:drawable/ic_menu_today"
+        android:title="Beranda" />
+    <item
+        android:id="@+id/nav_paket"
+        android:icon="@android:drawable/ic_menu_search"
+        android:title="Beli Paket" />
+    <item
+        android:id="@+id/nav_tagihan"
+        android:icon="@android:drawable/ic_menu_save"
+        android:title="Tagihan" />
+</menu>

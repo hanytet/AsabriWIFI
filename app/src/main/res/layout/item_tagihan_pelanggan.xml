@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_margin="8dp"
+    android:background="?android:attr/selectableItemBackground">
+
+    <TextView
+        android:id="@+id/tvItemPeriode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Periode: 06 / 2026"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvItemNamaPaket"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Paket Starter (15 Mbps)"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvItemJumlahTagihan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rp 100.000"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tvItemStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Belum Lunas" />
+
+    <Button
+        android:id="@+id/btnItemBayarTagihan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Bayar Sekarang" />
+</LinearLayout>
