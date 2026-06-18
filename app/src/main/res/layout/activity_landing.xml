@@ -2,6 +2,7 @@
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F8FAFC"
@@ -11,24 +12,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="24dp">
+            android:layout_marginBottom="32dp">
 
             <TextView
-                android:layout_width="0dp"
+                android:id="@+id/tvBrandName"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="AsabriWiFi"
-                android:textSize="26sp"
+                android:textSize="24sp"
                 android:textStyle="bold"
-                android:textColor="#2563EB"/>
+                android:textColor="#2563EB"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"/>
 
             <Button
                 android:id="@+id/btnMasukLanding"
@@ -37,31 +38,240 @@
                 android:text="Masuk"
                 android:backgroundTint="#2563EB"
                 android:textColor="#FFFFFF"
-                app:cornerRadius="20dp" />
-        </LinearLayout>
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                app:cornerRadius="24dp"
+                android:paddingHorizontal="24dp"/>
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🔵 Internet Tanpa Batas Kuota"
+            android:textColor="#2563EB"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:background="#EFF6FF"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:layout_marginBottom="12dp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Internet Cepat untuk Keluarga Anda"
-            android:textSize="32sp"
+            android:text="Internet Cepat\nuntuk Keluarga Anda"
+            android:textSize="34sp"
             android:textStyle="bold"
             android:textColor="#1E293B"
-            android:lineSpacingMultiplier="1.1"
-            android:layout_marginBottom="8dp"/>
+            android:lineSpacingMultiplier="1.05"
+            android:layout_marginBottom="12dp"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nikmati streaming 4K, gaming tanpa lag, dan browsing super cepat dengan kuota unlimited."
-            android:textSize="14sp"
+            android:text="Nikmati streaming 4K, gaming tanpa lag, dan browsing super cepat dengan harga jujur dan layanan pelanggan 24/7."
+            android:textSize="15sp"
             android:textColor="#64748B"
-            android:layout_marginBottom="24dp"/>
+            android:lineSpacingMultiplier="1.2"
+            android:layout_marginBottom="28dp"/>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="210dp"
+            android:layout_marginBottom="32dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="#000000">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <VideoView
+                    android:id="@+id/videoPromo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerInParent="true" />
+
+                <View
+                    android:id="@+id/videoOverlay"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#22000000" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="PROMO &amp; KELEBIHAN"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:background="#EF4444"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="4dp"
+                    android:layout_margin="12dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentStart="true"/>
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="32dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pengalaman Internet Terbaik"
+                android:textStyle="bold"
+                android:textColor="#1E293B"
+                android:textSize="18sp"
+                android:layout_marginBottom="4dp"
+                android:layout_marginStart="4dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Keunggulan utama layanan AsabriWiFi"
+                android:textColor="#64748B"
+                android:textSize="13sp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginStart="4dp"/>
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:overScrollMode="never">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingBottom="8dp">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="220dp"
+                        android:layout_height="140dp"
+                        android:layout_marginEnd="12dp"
+                        android:layout_marginStart="4dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="2dp">
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/wifi4k"
+                            android:scaleType="centerCrop"/>
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="220dp"
+                        android:layout_height="140dp"
+                        android:layout_marginEnd="12dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="2dp">
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/wifi_secure"
+                            android:scaleType="centerCrop"/>
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="220dp"
+                        android:layout_height="140dp"
+                        android:layout_marginEnd="16dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="2dp">
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/wifi_nolag"
+                            android:scaleType="centerCrop"/>
+                    </androidx.cardview.widget.CardView>
+
+                </LinearLayout>
+            </HorizontalScrollView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="3"
+            android:layout_marginBottom="36dp"
+            android:background="#FFFFFF"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="300+"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="#2563EB"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pelanggan Aktif"
+                    android:textSize="11sp"
+                    android:textColor="#64748B"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="99.9%"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="#2563EB"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Uptime Garansi"
+                    android:textSize="11sp"
+                    android:textColor="#64748B"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="24/7"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="#2563EB"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Technical Support"
+                    android:textSize="11sp"
+                    android:textColor="#64748B"/>
+            </LinearLayout>
+        </LinearLayout>
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="32dp"
             app:cardCornerRadius="16dp"
             app:cardElevation="2dp"
             app:cardBackgroundColor="#FFFFFF">
@@ -96,14 +306,12 @@
                         android:padding="16dp"
                         android:textSize="15sp"
                         android:textColor="#1E293B"/>
-
                 </com.google.android.material.textfield.TextInputLayout>
-
 
                 <org.osmdroid.views.MapView
                     android:id="@+id/mapView"
                     android:layout_width="match_parent"
-                    android:layout_height="250dp"
+                    android:layout_height="230dp"
                     android:layout_marginBottom="16dp" />
 
                 <Button
@@ -111,7 +319,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:text="Cek Sekarang"
-                    android:backgroundTint="#4F46E5"
+                    android:textStyle="bold"
+                    android:backgroundTint="#2563EB"
                     app:cornerRadius="12dp"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
@@ -123,16 +332,18 @@
             android:textStyle="bold"
             android:textColor="#1E293B"
             android:textSize="18sp"
-            android:layout_marginBottom="12dp"
+            android:layout_marginBottom="14dp"
             android:layout_marginStart="4dp"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvPaketLanding"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:paddingEnd="16dp"
+            android:paddingBottom="24dp"
             android:overScrollMode="never"
-            android:nestedScrollingEnabled="false"
-            android:paddingBottom="16dp"/>
+            android:nestedScrollingEnabled="false"/>
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

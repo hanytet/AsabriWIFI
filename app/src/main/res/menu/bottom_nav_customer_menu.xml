@@ -12,4 +12,12 @@
         android:id="@+id/nav_tagihan"
         android:icon="@android:drawable/ic_menu_save"
         android:title="Tagihan" />
+    <item
+        android:id="@+id/nav_riwayat"
+        android:icon="@android:drawable/ic_menu_recent_history"
+        android:title="Riwayat" />
+    <item
+        android:id="@+id/nav_keluhan"
+        android:icon="@android:drawable/ic_menu_help"
+        android:title="Keluhan" />
 </menu>

@@ -1,27 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F7FA"
-    android:padding="16dp">
+    android:background="#F8FAFC"
+    android:padding="20dp">
 
-    <TextView
-        android:id="@+id/tvTitlePaket"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/layoutHeaderPaket"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Daftar Paket WiFi"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="#333333"
-        android:layout_marginBottom="16dp" />
+        android:orientation="vertical"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:id="@+id/tvTitlePaket"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kelola Paket Layanan"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:textColor="#0F172A" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Manajemen paket internet yang ditawarkan"
+            android:textSize="13sp"
+            android:textColor="#64748B" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPaket"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/tvTitlePaket"
+        android:layout_below="@id/layoutHeaderPaket"
         android:clipToPadding="false"
-        android:paddingBottom="80dp"/>
+        android:paddingBottom="80dp"
+        android:overScrollMode="never" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabTambah"
@@ -29,10 +47,13 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="72dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="16dp"
         android:src="@android:drawable/ic_input_add"
-        android:backgroundTint="#2196F3"
-        android:tint="#FFFFFF" />
+        app:backgroundTint="#2563EB"
+        app:tint="#FFFFFF"
+        app:fabSize="normal"
+        app:elevation="4dp"
+        android:contentDescription="Tambah Paket" />
 
 </RelativeLayout>

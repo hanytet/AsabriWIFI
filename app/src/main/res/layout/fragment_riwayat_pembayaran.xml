@@ -3,23 +3,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- RecyclerView untuk menampilkan daftar riwayat transaksi pelanggan -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvTagihanPelanggan"
+        android:id="@+id/rvRiwayatPembayaran"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="8dp"/>
+        android:padding="4dp"/>
 
+    <!-- Teks peringatan jika data riwayat di database kosong -->
     <TextView
-        android:id="@+id/tvTagihanKosong"
+        android:id="@+id/tvRiwayatKosong"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Tidak ada tagihan."
+        android:text="Belum ada riwayat transaksi pembayaran."
         android:visibility="gone"
         android:textSize="16sp"/>
 
+    <!-- Indikator loading saat mengambil data dari API Laravel -->
     <ProgressBar
-        android:id="@+id/progressBarTagihan"
+        android:id="@+id/progressBarRiwayat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

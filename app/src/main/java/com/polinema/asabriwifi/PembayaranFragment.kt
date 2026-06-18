@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.RadioGroup
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -19,14 +20,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.tabs.TabLayout
 import org.json.JSONArray
 import org.json.JSONObject
 
 class PembayaranFragment : Fragment() {
 
     private lateinit var rvPembayaran: RecyclerView
-    private lateinit var tabLayoutFilter: TabLayout
+    private lateinit var rgFilterPembayaran: RadioGroup
     private lateinit var fabCatatTunai: FloatingActionButton
     private lateinit var tvDataKosong: TextView
     private lateinit var pembayaranAdapter: PembayaranAdapter
@@ -41,7 +41,7 @@ class PembayaranFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_pembayaran, container, false)
 
         rvPembayaran = view.findViewById(R.id.rvPembayaran)
-        tabLayoutFilter = view.findViewById(R.id.tabLayoutFilter)
+        rgFilterPembayaran = view.findViewById(R.id.rgFilterPembayaran)
         fabCatatTunai = view.findViewById(R.id.fabCatatTunai)
         tvDataKosong = view.findViewById(R.id.tvDataKosong)
 
@@ -49,32 +49,28 @@ class PembayaranFragment : Fragment() {
         pembayaranAdapter = PembayaranAdapter(listPembayaran)
         rvPembayaran.adapter = pembayaranAdapter
 
-        // Registrasi RecyclerView agar mendukung Context Menu di Fragment
+        // Registrasi Context Menu
         registerForContextMenu(rvPembayaran)
 
-        // 1. SET TAB FILTER STATUS
-        tabLayoutFilter.addTab(tabLayoutFilter.newTab().setText("Semua"))
-        tabLayoutFilter.addTab(tabLayoutFilter.newTab().setText("Pending"))
-        tabLayoutFilter.addTab(tabLayoutFilter.newTab().setText("Lunas"))
-        tabLayoutFilter.addTab(tabLayoutFilter.newTab().setText("Ditolak"))
-
-        tabLayoutFilter.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                val teksTab = tab?.text.toString().lowercase()
-                statusAktif = if (teksTab == "pending") "menunggu_verifikasi" else teksTab
-                fetchDataPembayaran()
+        // Filter menggunakan RadioGroup
+        rgFilterPembayaran.setOnCheckedChangeListener { _, checkedId ->
+            statusAktif = when (checkedId) {
+                R.id.rbSemuaPembayaran -> "semua"
+                R.id.rbPembayaranPending -> "menunggu_verifikasi"
+                R.id.rbPembayaranLunas -> "lunas"
+                R.id.rbPembayaranDitolaK -> "ditolak"
+                else -> "semua"
             }
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
-        })
+            fetchDataPembayaran()
+        }
 
-        // KLIK BIASA
+        // Klik Item Biasa
         pembayaranAdapter.onItemClick = { bayar ->
             val status = bayar.optString("status", "").uppercase()
             Toast.makeText(requireContext(), "Status: $status (Tahan lama untuk opsi detail)", Toast.LENGTH_SHORT).show()
         }
 
-        // TOMBOL FAB CATAT TUNAI DIKLIK
+        // Tombol FAB Catat Tunai
         fabCatatTunai.setOnClickListener {
             ambilDataTagihanBelumLunas()
         }
@@ -83,13 +79,12 @@ class PembayaranFragment : Fragment() {
         return view
     }
 
-    // 2. TANGKAP AKSI DARI CONTEXT MENU RESMI ANDROID
     override fun onContextItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == 101) { // Id rujukan dari adapter
+        if (item.itemId == 101) {
             val position = pembayaranAdapter.positionTerpilih
             if (position >= 0 && position < listPembayaran.size) {
                 val dataTerpilih = listPembayaran[position]
-                bukaModalDetailContext(dataTerpilih) // Eksekusi buka detail modal Laravel
+                bukaModalDetailContext(dataTerpilih)
             }
             return true
         }
@@ -120,7 +115,6 @@ class PembayaranFragment : Fragment() {
         VolleySingleton.getInstance(requireContext()).addToRequestQueue(stringRequest)
     }
 
-    // 3. TAMPILAN POP-UP MODAL DETAIL SESUAI STRUKTUR BLADE LARAVEL
     private fun bukaModalDetailContext(bayar: JSONObject) {
         val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_detail_pembayaran, null)
         val dtPelanggan = dialogView.findViewById<TextView>(R.id.dtPelanggan)

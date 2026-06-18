@@ -23,8 +23,9 @@ class DashboardFragment : Fragment() {
     private lateinit var tvPemasukanBulanIni: TextView
     private lateinit var btnRefresh: Button
 
-    // Tambahan variabel untuk menu Tindakan Cepat kustom
+    // Inisialisasi variabel menu Tindakan Cepat 3 kolom sesuai layout XML terbaru
     private lateinit var btnMenuLaporan: CardView
+    private lateinit var btnMenuPelanggan: CardView
     private lateinit var btnMenuPengguna: CardView
 
     override fun onCreateView(
@@ -41,8 +42,9 @@ class DashboardFragment : Fragment() {
         tvPemasukanBulanIni = view.findViewById(R.id.tvPemasukanBulanIni)
         btnRefresh = view.findViewById(R.id.btnRefresh)
 
-        // Inisialisasi komponen menu Tindakan Cepat kustom
+        // Inisialisasi komponen menu Tindakan Cepat kustom 3 kolom
         btnMenuLaporan = view.findViewById(R.id.btnMenuLaporan)
+        btnMenuPelanggan = view.findViewById(R.id.btnMenuPelanggan)
         btnMenuPengguna = view.findViewById(R.id.btnMenuPengguna)
 
         // Set Listener untuk pindah halaman ke Laporan Kas Keuangan
@@ -50,7 +52,12 @@ class DashboardFragment : Fragment() {
             (activity as? MainActivity)?.loadFragment(LaporanFragment())
         }
 
-        // Set Listener untuk pindah halaman ke Kelola Akun Pengguna (User)
+        // Set Listener untuk pindah halaman ke Kelola Pelanggan
+        btnMenuPelanggan.setOnClickListener {
+            (activity as? MainActivity)?.loadFragment(PelangganFragment())
+        }
+
+        // Set Listener untuk pindah halaman ke Kelola User / Pengguna Sistem
         btnMenuPengguna.setOnClickListener {
             (activity as? MainActivity)?.loadFragment(PenggunaFragment())
         }

@@ -1,27 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F7FA"
-    android:padding="16dp">
+    android:background="#F8FAFC"
+    android:padding="20dp">
 
-    <TextView
-        android:id="@+id/tvTitlePelanggan"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/layoutHeaderPelanggan"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Daftar Pelanggan"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="#333333"
-        android:layout_marginBottom="16dp" />
+        android:orientation="vertical"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:id="@+id/tvTitlePelanggan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Data Pelanggan"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:textColor="#0F172A" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Kelola data seluruh pelanggan AsabriWiFi"
+            android:textSize="13sp"
+            android:textColor="#64748B" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPelanggan"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/tvTitlePelanggan"
+        android:layout_below="@id/layoutHeaderPelanggan"
         android:clipToPadding="false"
-        android:paddingBottom="80dp"/>
+        android:paddingBottom="80dp"
+        android:overScrollMode="never" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabTambahPelanggan"
@@ -29,10 +47,13 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="72dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="16dp"
         android:src="@android:drawable/ic_input_add"
-        android:backgroundTint="#4CAF50"
-        android:tint="#FFFFFF" />
+        app:backgroundTint="#2563EB"
+        app:tint="#FFFFFF"
+        app:fabSize="normal"
+        app:elevation="4dp"
+        android:contentDescription="Tambah Pelanggan" />
 
 </RelativeLayout>

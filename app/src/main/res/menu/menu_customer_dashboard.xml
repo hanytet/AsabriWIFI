@@ -2,6 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <!-- 🚀 TIKET MASUK MODUL PROFIL PELANGGAN -->
+    <item
+        android:id="@+id/action_profile"
+        android:title="Profil Saya"
+        app:showAsAction="never" />
+
     <!-- Menu Keluar Sesi Klasik -->
     <item
         android:id="@+id/action_logout"

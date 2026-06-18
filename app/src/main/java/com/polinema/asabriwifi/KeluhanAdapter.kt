@@ -20,6 +20,9 @@ class KeluhanAdapter(private val listKeluhan: ArrayList<JSONObject>) : RecyclerV
         val tvIsi = itemView.findViewById<TextView>(R.id.itemIsiKeluhan)
         val tvTeknisi = itemView.findViewById<TextView>(R.id.itemInfoTeknisi)
 
+        // INTEGRASI WIDGET BARU: Penampung TextView untuk Catatan Lapangan/Admin
+        val tvCatatan = itemView.findViewById<TextView>(R.id.itemCatatanAdmin)
+
         init {
             itemView.setOnCreateContextMenuListener(this)
         }
@@ -45,6 +48,15 @@ class KeluhanAdapter(private val listKeluhan: ArrayList<JSONObject>) : RecyclerV
 
             val namaTeknisi = item.optString("nama_teknisi", "")
             holder.tvTeknisi.text = if (namaTeknisi.isNotEmpty() && namaTeknisi != "null") "Teknisi: $namaTeknisi" else "Teknisi: Belum ditugaskan"
+
+            // LOGIKA MENAMPILKAN CATATAN LAPORAN TEKNISI YANG DISIMPAN DI FIELD catatan_admin
+            val catatanTeknisi = item.optString("catatan_admin", "").trim()
+            if (catatanTeknisi.isNotEmpty() && catatanTeknisi != "null") {
+                holder.tvCatatan.text = "Laporan Lapangan: $catatanTeknisi"
+                holder.tvCatatan.visibility = View.VISIBLE
+            } else {
+                holder.tvCatatan.visibility = View.GONE
+            }
 
             val status = item.optString("status", "baru").lowercase()
             holder.tvStatus.text = status.replace("_", " ").uppercase()

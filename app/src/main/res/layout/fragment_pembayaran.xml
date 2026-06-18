@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F7FA">
+    android:background="#F8FAFC">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,36 +14,73 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Kelola Pembayaran"
-            android:textSize="24sp"
+            android:textSize="26sp"
             android:textStyle="bold"
-            android:textColor="#333333"
-            android:paddingHorizontal="16dp"
-            android:paddingTop="16dp"
+            android:textColor="#0F172A"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="20dp"
             android:paddingBottom="4dp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Kelola dan verifikasi pembayaran dari pelanggan"
-            android:textSize="14sp"
-            android:textColor="#666666"
-            android:paddingHorizontal="16dp"
-            android:paddingBottom="12dp" />
+            android:textSize="13sp"
+            android:textColor="#64748B"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="16dp" />
 
-        <!-- Filter Tab mirip Laravel Web -->
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabLayoutFilter"
+        <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#F5F7FA"
-            app:tabMode="fixed"
-            app:tabGravity="fill"
-            app:tabIndicatorColor="#2196F3"
-            app:tabTextColor="#666666"
-            app:tabSelectedTextColor="#2196F3"
-            app:tabTextAppearance="@android:style/TextAppearance.Small" />
+            android:scrollbars="none"
+            android:layout_marginBottom="12dp"
+            android:paddingHorizontal="20dp">
 
-        <!-- Frame penampung data kosong / loading spinner -->
+            <RadioGroup
+                android:id="@+id/rgFilterPembayaran"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/rbSemuaPembayaran"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Semua"
+                    android:textSize="13sp"
+                    android:checked="true"
+                    android:paddingHorizontal="12dp"
+                    android:layout_marginEnd="8dp"/>
+
+                <RadioButton
+                    android:id="@+id/rbPembayaranPending"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pending"
+                    android:textSize="13sp"
+                    android:paddingHorizontal="12dp"
+                    android:layout_marginEnd="8dp"/>
+
+                <RadioButton
+                    android:id="@+id/rbPembayaranLunas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lunas"
+                    android:textSize="13sp"
+                    android:paddingHorizontal="12dp"
+                    android:layout_marginEnd="8dp"/>
+
+                <RadioButton
+                    android:id="@+id/rbPembayaranDitolaK"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ditolak"
+                    android:textSize="13sp"
+                    android:paddingHorizontal="12dp"/>
+            </RadioGroup>
+        </HorizontalScrollView>
+
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -53,7 +90,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
-                android:paddingBottom="80dp" />
+                android:paddingTop="4dp"
+                android:paddingBottom="90dp" />
 
             <TextView
                 android:id="@+id/tvDataKosong"
@@ -62,20 +100,22 @@
                 android:text="Tidak ada data pembayaran ditemukan."
                 android:layout_gravity="center"
                 android:visibility="gone"
-                android:textColor="#999999"/>
+                android:textColor="#64748B"
+                android:textSize="14sp"/>
         </FrameLayout>
     </LinearLayout>
 
-    <!-- Tombol Catat Tunai di Android -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabCatatTunai"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
+        android:layout_margin="20dp"
         android:contentDescription="Catat Tunai"
         app:srcCompat="@android:drawable/ic_input_add"
-        app:backgroundTint="#4CAF50"
-        app:tint="#FFFFFF" />
+        app:backgroundTint="#16A34A"
+        app:tint="#FFFFFF"
+        app:fabSize="normal"
+        app:elevation="4dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

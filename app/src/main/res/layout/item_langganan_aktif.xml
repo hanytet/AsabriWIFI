@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    android:layout_marginHorizontal="2dp"
+    android:layout_margin="8dp"
     app:cardCornerRadius="14dp"
     app:cardElevation="1dp"
     app:cardBackgroundColor="#FFFFFF">
@@ -16,7 +15,7 @@
         android:padding="16dp">
 
         <TextView
-            android:id="@+id/itemNamaPaket"
+            android:id="@+id/tvItemNamaPaketAktif"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Nama Paket"
@@ -25,35 +24,33 @@
             android:textColor="#0F172A" />
 
         <TextView
-            android:id="@+id/itemKecepatan"
+            android:id="@+id/tvItemTanggalMulai"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="00 Mbps"
-            android:textSize="14sp"
-            android:textColor="#16A34A"
-            android:textStyle="bold"
-            android:layout_marginTop="4dp" />
+            android:layout_marginTop="6dp"
+            android:text="Mulai Berlangganan: -"
+            android:textSize="13sp"
+            android:textColor="#475569" />
 
         <TextView
-            android:id="@+id/itemHarga"
+            android:id="@+id/tvItemStatusPaket"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Rp 0 / bulan"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="#2563EB"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="4dp"
+            android:text="Status: Aktif"
+            android:textColor="#16A34A"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
         <Button
-            android:id="@+id/itemBtnPilih"
+            android:id="@+id/btnItemBerhentiLayanan"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:text="PILIH PAKET"
-            android:textStyle="bold"
             android:layout_marginTop="14dp"
-            android:backgroundTint="#2563EB"
+            android:text="Berhenti Berlangganan"
+            android:textStyle="bold"
+            android:backgroundTint="#EF4444"
             android:textColor="#FFFFFF"
             app:cornerRadius="10dp" />
-
     </LinearLayout>
 </androidx.cardview.widget.CardView>

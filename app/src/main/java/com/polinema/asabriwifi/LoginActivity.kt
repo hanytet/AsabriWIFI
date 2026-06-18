@@ -3,51 +3,62 @@ package com.polinema.asabriwifi
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
-import org.json.JSONException
 import org.json.JSONObject
 
 class LoginActivity : AppCompatActivity() {
 
-    // 🚀 FIXED: Mengubah etEmail menjadi EditText biasa
     private lateinit var etEmail: EditText
     private lateinit var etNik: EditText
     private lateinit var etPassword: EditText
     private lateinit var btnLogin: Button
     private lateinit var progressBar: ProgressBar
 
+    private lateinit var layoutKembali: LinearLayout
+    private lateinit var tvDaftarSekarang: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // Inisialisasi komponen view (etEmail sekarang diikat sebagai EditText)
         etEmail = findViewById(R.id.etEmail)
         etNik = findViewById(R.id.etNik)
         etPassword = findViewById(R.id.etPassword)
         btnLogin = findViewById(R.id.btnLogin)
         progressBar = findViewById(R.id.progressBar)
 
+        layoutKembali = findViewById(R.id.layoutKembali)
+        tvDaftarSekarang = findViewById(R.id.tvDaftarSekarang)
+
         val sharedPreferences = getSharedPreferences("AsabriPrefs", Context.MODE_PRIVATE)
 
-        // =========================================================================
-        // LOGIKA KLIK TOMBOL LOGIN & REDIRECT BERDASARKAN ROLE
-        // =========================================================================
+        layoutKembali.setOnClickListener {
+            finish()
+        }
+
+        // PERBAIKAN SINKRONISASI: Menghubungkan teks daftar langsung ke RegisterActivity
+        tvDaftarSekarang.setOnClickListener {
+            Toast.makeText(this, "Membuka Menu Pendaftaran Pelanggan Baru", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, RegisterActivity::class.java))
+        }
+
         btnLogin.setOnClickListener {
             val email = etEmail.text.toString().trim()
             val nik = etNik.text.toString().trim()
             val password = etPassword.text.toString().trim()
 
-            if (email.isNotEmpty() && nik.isNotEmpty() && password.isNotEmpty()) {
-
+            if (email.isNotEmpty() && password.isNotEmpty()) {
                 setLoadingState(true)
-
                 val url = ApiConfig.BASE_URL + "login"
 
                 val stringRequest = object : StringRequest(
@@ -55,53 +66,59 @@ class LoginActivity : AppCompatActivity() {
                     { response ->
                         setLoadingState(false)
                         try {
+                            Log.d("AsabriDebug", "Respon Login Server: $response")
                             val jsonObject = JSONObject(response)
-                            val status = jsonObject.getString("status")
+                            val status = jsonObject.optString("status")
 
                             if (status == "berhasil") {
-                                val idUser = jsonObject.getString("id_user")
-                                val role = jsonObject.getString("role")
-
-                                // Simpan status sesi ke local storage
-                                sharedPreferences.edit()
-                                    .putBoolean("IS_LOGGED_IN", true)
-                                    .putString("ID_USER", idUser)
-                                    .putString("ROLE", role)
-                                    .apply()
-
-                                Toast.makeText(this, "Login Berhasil!", Toast.LENGTH_SHORT).show()
-
-                                // Logika redirect otomatis berdasarkan role backend Laravel
-                                val intent = if (role.contains("admin", ignoreCase = true)) {
-                                    Intent(this, MainActivity::class.java)
-                                } else {
-                                    Intent(this, CustomerDashboardActivity::class.java)
+                                var idUser = jsonObject.optString("id", "")
+                                if (idUser.isEmpty()) {
+                                    idUser = jsonObject.optString("id_user", "")
                                 }
 
-                                // Bersihkan tumpukan activity agar tidak bisa di-back kembali ke login
-                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                                startActivity(intent)
-                                finish()
+                                val role = jsonObject.optString("role", "")
+
+                                if (idUser.isEmpty() || idUser == "null") {
+                                    Toast.makeText(this@LoginActivity, "FATAL: Server tidak mengirimkan ID User!", Toast.LENGTH_LONG).show()
+                                } else {
+                                    sharedPreferences.edit()
+                                        .putBoolean("IS_LOGGED_IN", true)
+                                        .putString("ID_USER", idUser.trim())
+                                        .putString("ROLE", role.trim())
+                                        .commit()
+
+                                    Toast.makeText(this@LoginActivity, "Login Sukses! (ID: $idUser)", Toast.LENGTH_SHORT).show()
+
+                                    val intent = when {
+                                        role.contains("admin", ignoreCase = true) -> {
+                                            Intent(this@LoginActivity, MainActivity::class.java)
+                                        }
+                                        role.contains("teknisi", ignoreCase = true) -> {
+                                            Intent(this@LoginActivity, TeknisiMainActivity::class.java)
+                                        }
+                                        else -> {
+                                            Intent(this@LoginActivity, CustomerDashboardActivity::class.java)
+                                        }
+                                    }
+
+                                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                    startActivity(intent)
+                                    finish()
+                                }
                             } else {
                                 val pesan = jsonObject.optString("pesan", "Kombinasi akun salah!")
-                                Toast.makeText(this, pesan, Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@LoginActivity, pesan, Toast.LENGTH_LONG).show()
                             }
-                        } catch (e: JSONException) {
-                            Toast.makeText(this@LoginActivity, "Gagal memproses respons server", Toast.LENGTH_SHORT).show()
+                        } catch (e: Exception) {
+                            Toast.makeText(this@LoginActivity, "Gagal mengekstrak data login", Toast.LENGTH_SHORT).show()
                             e.printStackTrace()
                         }
                     },
                     { error ->
                         setLoadingState(false)
-                        val networkResponse = error.networkResponse
-                        if (networkResponse != null) {
-                            val statusCode = networkResponse.statusCode
-                            val errorData = String(networkResponse.data)
-                            Toast.makeText(this@LoginActivity, "Error $statusCode: $errorData", Toast.LENGTH_LONG).show()
-                        } else {
-                            Toast.makeText(this@LoginActivity, "Gagal terhubung! Periksa kembali IP & Server Laravel", Toast.LENGTH_LONG).show()
-                            error.printStackTrace()
-                        }
+                        val statusCode = error.networkResponse?.statusCode
+                        Log.e("AsabriError", "Login Volley Error Code: $statusCode")
+                        Toast.makeText(this@LoginActivity, "Gagal terhubung ke server (Code: $statusCode)", Toast.LENGTH_SHORT).show()
                     }
                 ) {
                     override fun getParams(): MutableMap<String, String> {
@@ -113,9 +130,10 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }
 
+                stringRequest.setShouldCache(false)
                 VolleySingleton.getInstance(this).addToRequestQueue(stringRequest)
             } else {
-                Toast.makeText(this, "Harap isi email, NIK, dan password!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Harap isi Email dan Password Anda!", Toast.LENGTH_SHORT).show()
             }
         }
     }

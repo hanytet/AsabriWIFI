@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/status_semua"
+        android:title="Semua Status" />
+    <item
+        android:id="@+id/status_baru"
+        android:title="Keluhan Baru" />
+    <item
+        android:id="@+id/status_diterima"
+        android:title="Diterima Admin" />
+    <item
+        android:id="@+id/status_ditugaskan"
+        android:title="Ditugaskan" />
+    <item
+        android:id="@+id/status_berangkat"
+        android:title="Berangkat" />
+    <item
+        android:id="@+id/status_selesai"
+        android:title="Selesai" />
+</menu>

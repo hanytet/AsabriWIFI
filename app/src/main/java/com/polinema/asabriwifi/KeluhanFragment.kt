@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.RadioGroup
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -18,14 +19,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
-import com.google.android.material.tabs.TabLayout
 import org.json.JSONArray
 import org.json.JSONObject
 
 class KeluhanFragment : Fragment() {
 
     private lateinit var rvKeluhan: RecyclerView
-    private lateinit var tabFilter: TabLayout
+    private lateinit var rgFilterKeluhan: RadioGroup
     private lateinit var etCari: EditText
     private lateinit var tvKosong: TextView
     private lateinit var txtBaru: TextView
@@ -43,7 +43,7 @@ class KeluhanFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_keluhan, container, false)
 
         rvKeluhan = view.findViewById(R.id.rvKeluhan)
-        tabFilter = view.findViewById(R.id.tabFilterKeluhan)
+        rgFilterKeluhan = view.findViewById(R.id.rgFilterKeluhan)
         etCari = view.findViewById(R.id.etCariKeluhan)
         tvKosong = view.findViewById(R.id.tvKeluhanKosong)
         txtBaru = view.findViewById(R.id.boxTotalBaru)
@@ -56,28 +56,17 @@ class KeluhanFragment : Fragment() {
 
         registerForContextMenu(rvKeluhan)
 
-        // Buat Bar Filter Tab
-        tabFilter.addTab(tabFilter.newTab().setText("Semua"))
-        tabFilter.addTab(tabFilter.newTab().setText("Baru"))
-        tabFilter.addTab(tabFilter.newTab().setText("Diterima"))
-        tabFilter.addTab(tabFilter.newTab().setText("Ditugaskan"))
-        tabFilter.addTab(tabFilter.newTab().setText("Berangkat"))
-        tabFilter.addTab(tabFilter.newTab().setText("Selesai"))
-        tabFilter.addTab(tabFilter.newTab().setText("Ditolak"))
-
-        tabFilter.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                val text = tab?.text.toString().lowercase()
-                statusAktif = when (text) {
-                    "ditugaskan" -> "teknisi_ditugaskan"
-                    "berangkat" -> "teknisi_berangkat"
-                    else -> text
-                }
-                fetchDataKeluhan()
+        // PENYESUAIAN ENGINE: Pengganti OnTabSelectedListener menggunakan RadioGroup Checked Change
+        rgFilterKeluhan.setOnCheckedChangeListener { _, checkedId ->
+            statusAktif = when (checkedId) {
+                R.id.rbSemuaKeluhan -> "semua"
+                R.id.rbKeluhanBaru -> "baru"
+                R.id.rbKeluhanProses -> "proses"
+                R.id.rbKeluhanSelesai -> "selesai"
+                else -> "semua"
             }
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
-        })
+            fetchDataKeluhan()
+        }
 
         // Pencarian via Enter Keyboard
         etCari.setOnEditorActionListener { _, actionId, event ->
@@ -114,7 +103,6 @@ class KeluhanFragment : Fragment() {
                     listKeluhan.clear()
                     val json = JSONObject(response)
                     if (json.getString("status") == "berhasil") {
-                        // Pasang Counter Box Atas
                         txtBaru.text = json.optString("total_baru", "0")
                         txtProses.text = json.optString("total_proses", "0")
                         txtSelesai.text = json.optString("total_selesai", "0")
@@ -133,7 +121,6 @@ class KeluhanFragment : Fragment() {
         VolleySingleton.getInstance(requireContext()).addToRequestQueue(stringRequest)
     }
 
-    // DIALOG AKSI COCOK 100% DENGAN ATURAN IF-ELSE STATUS BLADE LARAVEL
     private fun bukaDialogAksiAlurStatus(keluhan: JSONObject) {
         val idKeluhan = keluhan.optString("id")
         val status = keluhan.optString("status", "baru").lowercase()

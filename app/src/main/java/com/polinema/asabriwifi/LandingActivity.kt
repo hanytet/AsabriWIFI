@@ -3,12 +3,14 @@ package com.polinema.asabriwifi
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.AutoCompleteTextView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Toast
+import android.widget.VideoView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,6 +33,9 @@ class LandingActivity : AppCompatActivity() {
     private lateinit var rvPaket: RecyclerView
     private lateinit var mapView: MapView
 
+    private lateinit var videoPromo: VideoView
+    private lateinit var videoOverlay: View
+
     private lateinit var adapter: PaketLandingAdapter
     private val listPaket = ArrayList<JSONObject>()
     private val listRawWilayah = ArrayList<JSONObject>()
@@ -42,17 +47,22 @@ class LandingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         // =========================================================================
-        // 1. SINKRONISASI PROTEKSI SESI (Pencegah Mental & Auto-Logout)
+        // 1. SINKRONISASI PROTEKSI SESI (Pencegah Mental & Auto-Logout Multi-Role)
         // =========================================================================
         val sharedPreferences = getSharedPreferences("AsabriPrefs", Context.MODE_PRIVATE)
         if (sharedPreferences.getBoolean("IS_LOGGED_IN", false)) {
             val role = sharedPreferences.getString("ROLE", "") ?: ""
 
-            // Menggunakan ignoreCase = true agar toleran terhadap huruf kapital database (pelanggan/Pelanggan)
-            val intentBypass = if (role.contains("admin", ignoreCase = true)) {
-                Intent(this, MainActivity::class.java) // Ke Dashboard Admin
-            } else {
-                Intent(this, CustomerDashboardActivity::class.java) // Ke Dashboard Pelanggan
+            val intentBypass = when {
+                role.contains("admin", ignoreCase = true) -> {
+                    Intent(this, MainActivity::class.java)
+                }
+                role.contains("teknisi", ignoreCase = true) -> {
+                    Intent(this, TeknisiMainActivity::class.java)
+                }
+                else -> {
+                    Intent(this, CustomerDashboardActivity::class.java)
+                }
             }
 
             intentBypass.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -71,14 +81,51 @@ class LandingActivity : AppCompatActivity() {
         rvPaket = findViewById(R.id.rvPaketLanding)
         mapView = findViewById(R.id.mapView)
 
+        videoPromo = findViewById(R.id.videoPromo)
+        videoOverlay = findViewById(R.id.videoOverlay)
+
         mapView.setMultiTouchControls(true)
         mapView.controller.setZoom(14.0)
 
-        rvPaket.layoutManager = LinearLayoutManager(this)
+        rvPaket.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         adapter = PaketLandingAdapter(listPaket) {
             startActivity(Intent(this, LoginActivity::class.java))
         }
         rvPaket.adapter = adapter
+
+        // =========================================================================
+        // 2. KONTROL ENGINE PEMUTAR VIDEO PROMO (Auto-Play, Pause-Resume Toggle, & Infinite Loop)
+        // =========================================================================
+        try {
+            val pathVideo = "android.resource://" + packageName + "/" + R.raw.promo_asabri
+            videoPromo.setVideoURI(Uri.parse(pathVideo))
+
+            videoPromo.setOnPreparedListener { mediaPlayer ->
+                mediaPlayer.isLooping = true
+
+                // Mengaktifkan output suara ke volume penuh (1f, 1f) sejak awal pemutaran
+                mediaPlayer.setVolume(1f, 1f)
+
+                // Hilangkan filter overlay gelap karena video diputar dengan suara normal
+                videoOverlay.visibility = View.GONE
+                videoPromo.start()
+            }
+
+            // IMPLEMENTASI TOGGLE PLAY / PAUSE VIDEO
+            val videoClickListener = View.OnClickListener {
+                if (videoPromo.isPlaying) {
+                    videoPromo.pause()
+                    Toast.makeText(this, "Video Di-Pause", Toast.LENGTH_SHORT).show()
+                } else {
+                    videoPromo.start()
+                    Toast.makeText(this, "Memutar Video Profil AsabriWiFi", Toast.LENGTH_SHORT).show()
+                }
+            }
+            videoPromo.setOnClickListener(videoClickListener)
+            videoOverlay.setOnClickListener(videoClickListener)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
         btnMasuk.setOnClickListener { startActivity(Intent(this, LoginActivity::class.java)) }
         btnCekJaringan.setOnClickListener { eksekusiCekJaringan() }
@@ -171,7 +218,7 @@ class LandingActivity : AppCompatActivity() {
 
     private fun eksekusiCekJaringan() {
         if (idWilayahTerpilih.isEmpty()) {
-            Toast.makeText(this, "Silakan pilih atau ketik nama wilayah dahulu, Tuan!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Silakan pilih atau ketik nama wilayah dahulu!", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -190,6 +237,15 @@ class LandingActivity : AppCompatActivity() {
         VolleySingleton.getInstance(this).addToRequestQueue(post)
     }
 
-    override fun onResume() { super.onResume(); mapView.onResume() }
-    override fun onPause() { super.onPause(); mapView.onPause() }
+    override fun onResume() {
+        super.onResume()
+        mapView.onResume()
+        // PENTING: Jangan paksa auto-start kembali di sini jika user sengaja melakukan pause sebelum meminimalkan aplikasi
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView.onPause()
+        videoPromo.pause()
+    }
 }

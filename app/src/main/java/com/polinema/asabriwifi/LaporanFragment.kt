@@ -1,12 +1,15 @@
 package com.polinema.asabriwifi
 
 import android.app.DatePickerDialog
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Spinner
@@ -36,6 +39,8 @@ class LaporanFragment : Fragment() {
     private lateinit var rvTransaksi: RecyclerView
     private lateinit var tvKosong: TextView
 
+    private lateinit var btnExportExcel: Button
+
     private lateinit var adapter: TransaksiLaporanAdapter
     private val listTransaksi = ArrayList<JSONObject>()
 
@@ -61,13 +66,15 @@ class LaporanFragment : Fragment() {
         rvTransaksi = view.findViewById(R.id.rvTransaksiLaporan)
         tvKosong = view.findViewById(R.id.tvLaporanKosong)
 
+        btnExportExcel = view.findViewById(R.id.btnExportExcel)
+
         rvTransaksi.layoutManager = LinearLayoutManager(requireContext())
         adapter = TransaksiLaporanAdapter(listTransaksi, true)
         rvTransaksi.adapter = adapter
 
         // Setup Spinners
         spinnerBulan.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, namaBulan)
-        spinnerTahun.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, pilihanTahun)
+        spinnerTahun.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, pilihanTahun)
 
         // Set Default Date Saat Ini
         val kalender = Calendar.getInstance()
@@ -119,15 +126,40 @@ class LaporanFragment : Fragment() {
         spinnerBulan.onItemSelectedListener = spinnerListener
         spinnerTahun.onItemSelectedListener = spinnerListener
 
+        btnExportExcel.setOnClickListener {
+            jalankanEksporLaporan()
+        }
+
         loadLaporanHarian()
         return view
+    }
+
+    private fun jalankanEksporLaporan() {
+        if (isTabHarianActive) {
+            // Memberitahu pengguna bahwa ekspor harian tidak tersedia sesuai konfigurasi rute server
+            Toast.makeText(requireContext(), "Ekspor spreadsheet hanya tersedia untuk Laporan Bulanan", Toast.LENGTH_SHORT).show()
+        } else {
+            val bln = spinnerBulan.selectedItemPosition + 1
+            val thn = spinnerTahun.selectedItem.toString()
+
+            // Memanggil rute ekspor bulanan tunggal yang terdaftar pada Laravel
+            val downloadUrl = "${ApiConfig.BASE_URL}laporan/bulanan/export?bulan=$bln&tahun=$thn"
+
+            try {
+                Toast.makeText(requireContext(), "Mengunduh file laporan spreadsheet...", Toast.LENGTH_SHORT).show()
+                val intentEkspor = Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl))
+                startActivity(intentEkspor)
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Perangkat gagal mengunduh berkas laporan", Toast.LENGTH_SHORT).show()
+                e.printStackTrace()
+            }
+        }
     }
 
     private fun loadLaporanHarian() {
         listTransaksi.clear()
         adapter.notifyDataSetChanged()
 
-        // SINKRONISASI 1: Endpoint mengarah ke API murni publik tanpa bypass /admin/
         val url = "${ApiConfig.BASE_URL}laporan/harian/data?tanggal=" + etTanggal.text.toString()
 
         val stringRequest = StringRequest(Request.Method.GET, url,
@@ -136,7 +168,6 @@ class LaporanFragment : Fragment() {
                     val json = JSONObject(response)
                     val summary = json.getJSONObject("summary")
 
-                    // Format nominal angka agar rapi dengan ribuan titik (.)
                     tvTotal.text = "Rp " + String.format("%,d", summary.optLong("total", 0)).replace(",", ".")
                     tvTransfer.text = "Rp " + String.format("%,d", summary.optLong("transfer", 0)).replace(",", ".")
                     tvTunai.text = "Rp " + String.format("%,d", summary.optLong("tunai", 0)).replace(",", ".")
@@ -163,7 +194,6 @@ class LaporanFragment : Fragment() {
         val bln = spinnerBulan.selectedItemPosition + 1
         val thn = spinnerTahun.selectedItem.toString()
 
-        // SINKRONISASI 2: Endpoint mengarah ke API murni publik tanpa bypass /admin/
         val url = "${ApiConfig.BASE_URL}laporan/bulanan/data?bulan=$bln&tahun=$thn"
 
         val stringRequest = StringRequest(Request.Method.GET, url,

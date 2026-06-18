@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8FAFC"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Buat Akun Baru"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:textColor="#0F172A" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Daftar layanan internet AsabriWiFi sekarang"
+            android:textSize="13sp"
+            android:textColor="#64748B"
+            android:layout_marginBottom="24dp" />
+
+        <EditText
+            android:id="@+id/etRegNama"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Nama Lengkap"
+            android:inputType="textPersonName"
+            android:layout_marginBottom="12dp"
+            android:paddingHorizontal="12dp"
+            android:background="@android:drawable/editbox_background_normal"/>
+
+        <EditText
+            android:id="@+id/etRegEmail"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Alamat Email"
+            android:inputType="textEmailAddress"
+            android:layout_marginBottom="12dp"
+            android:paddingHorizontal="12dp"
+            android:background="@android:drawable/editbox_background_normal"/>
+
+        <EditText
+            android:id="@+id/etRegNik"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Nomor NIK KTP"
+            android:inputType="number"
+            android:layout_marginBottom="12dp"
+            android:paddingHorizontal="12dp"
+            android:background="@android:drawable/editbox_background_normal"/>
+
+        <EditText
+            android:id="@+id/etRegHp"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Nomor HP WhatsApp"
+            android:inputType="phone"
+            android:layout_marginBottom="12dp"
+            android:paddingHorizontal="12dp"
+            android:background="@android:drawable/editbox_background_normal"/>
+
+        <EditText
+            android:id="@+id/etRegAlamat"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:hint="Alamat Lengkap Pemasangan"
+            android:inputType="textMultiLine"
+            android:gravity="top"
+            android:layout_marginBottom="12dp"
+            android:padding="12dp"
+            android:background="@android:drawable/editbox_background_normal"/>
+
+        <Button
+            android:id="@+id/btnRegGetGPS"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:text="Kunci Koordinat Rumah via GPS Device"
+            android:textSize="12sp"
+            android:backgroundTint="#475569"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="8dp"/>
+
+        <org.osmdroid.views.MapView
+            android:id="@+id/mapRegisterView"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:layout_marginBottom="16dp"
+            android:background="#E2E8F0"/>
+
+        <EditText
+            android:id="@+id/etRegPassword"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Kata Sandi (Min 8 Karakter)"
+            android:inputType="textPassword"
+            android:layout_marginBottom="12dp"
+            android:paddingHorizontal="12dp"
+            android:background="@android:drawable/editbox_background_normal"/>
+
+        <EditText
+            android:id="@+id/etRegConfirmPassword"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Konfirmasi Kata Sandi"
+            android:inputType="textPassword"
+            android:layout_marginBottom="24dp"
+            android:paddingHorizontal="12dp"
+            android:background="@android:drawable/editbox_background_normal"/>
+
+        <Button
+            android:id="@+id/btnKirimDaftar"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Daftar Sekarang"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:backgroundTint="#2563EB"
+            android:textColor="#FFFFFF"/>
+
+    </LinearLayout>
+</ScrollView>

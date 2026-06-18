@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="#F8FAFC">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        app:cardCornerRadius="14dp"
+        app:cardElevation="1dp"
+        app:cardBackgroundColor="#FFFFFF">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Laporkan Kendala Internet"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="#0F172A"
+                android:layout_marginBottom="14dp"/>
+
+            <Spinner
+                android:id="@+id/spinKategori"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:entries="@array/kategori_keluhan_array"
+                android:background="@android:drawable/btn_dropdown"
+                android:layout_marginBottom="12dp"/>
+
+            <EditText
+                android:id="@+id/etIsiKeluhan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Tulis kendala lengkap yang sedang dialami..."
+                android:inputType="textMultiLine"
+                android:gravity="top"
+                android:lines="4"
+                android:textSize="14sp"
+                android:padding="12dp"
+                android:background="@android:drawable/editbox_background_normal"
+                android:layout_marginBottom="16dp"/>
+
+            <Button
+                android:id="@+id/btnKirimKeluhan"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="Kirim Laporan Keluhan"
+                android:textStyle="bold"
+                android:backgroundTint="#2563EB"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="10dp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Riwayat Keluhan Saya"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:textColor="#1E293B"
+        android:layout_marginBottom="12dp"
+        android:layout_marginStart="2dp"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvKeluhan"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical" />
+
+        <ProgressBar
+            android:id="@+id/progressBarKeluhan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+    </FrameLayout>
+</LinearLayout>

@@ -3,6 +3,7 @@ package com.polinema.asabriwifi
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,13 +25,17 @@ class TagihanPelangganFragment : Fragment() {
     private lateinit var progressBar: ProgressBar
     private lateinit var tvKosong: TextView
     private val listTagihan = ArrayList<JSONObject>()
-    private lateinit var adapter: TagihanPelangganAdapter // Pastikan Tuan sudah membuat ViewHolder Adapter-nya
+    private lateinit var adapter: TagihanPelangganAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_tagihan_pelanggan, container, false)
+        return inflater.inflate(R.layout.fragment_tagihan_pelanggan, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         rvTagihan = view.findViewById(R.id.rvTagihanPelanggan)
         progressBar = view.findViewById(R.id.progressBarTagihan)
@@ -38,25 +43,39 @@ class TagihanPelangganFragment : Fragment() {
 
         rvTagihan.layoutManager = LinearLayoutManager(requireContext())
 
-        // Inisialisasi adapter dengan callback klik item untuk bayar
-        adapter = TagihanPelangganAdapter(listTagihan) { tagihanObj ->
-            tampilkanPilihanPembayaran(tagihanObj)
-        }
+        adapter = TagihanPelangganAdapter(
+            listTagihan,
+            { tagihanObj -> tampilkanPilihanPembayaran(tagihanObj) },
+            { tagihanObj -> tampilkanKonfirmasiPembatalan(tagihanObj) }
+        )
         rvTagihan.adapter = adapter
 
+        // Jalankan pemuatan data di sini agar siklus hidup komponen lebih aman
         loadDaftarTagihan()
-        return view
     }
 
     private fun loadDaftarTagihan() {
         progressBar.visibility = View.VISIBLE
         tvKosong.visibility = View.GONE
 
-        val sharedPreferences = requireActivity().getSharedPreferences("AsabriPrefs", Context.MODE_PRIVATE)
-        val idUser = sharedPreferences.getString("ID_USER", "")
+        var idUser = arguments?.getString("ARG_USER_ID") ?: ""
 
-        // Menggunakan endpoint tunggal API yang baru kita buat
-        val url = ApiConfig.BASE_URL + "tagihan-pelanggan?aksi=tampil&user_id=$idUser"
+        if (idUser.isEmpty() || idUser == "null") {
+            val sharedPreferences = requireContext().getSharedPreferences("AsabriPrefs", Context.MODE_PRIVATE)
+            idUser = sharedPreferences.getString("ID_USER", "") ?: ""
+        }
+
+        idUser = idUser.trim()
+        Log.d("AsabriDebug", "ID User yang digunakan di Tagihan Fragment: '$idUser'")
+
+        if (idUser.isEmpty() || idUser == "null" || idUser == "0") {
+            progressBar.visibility = View.GONE
+            Toast.makeText(requireContext(), "Sesi ID tidak ditemukan, silakan login ulang", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // FIXED SINKRONISASI: Ubah "tagihan-pelanggan" menjadi "tagihan" agar cocok dengan route Laravel
+        val url = ApiConfig.BASE_URL + "tagihan?aksi=tampil&user_id=$idUser"
 
         val stringRequest = StringRequest(Request.Method.GET, url,
             { response ->
@@ -66,26 +85,34 @@ class TagihanPelangganFragment : Fragment() {
                     val jsonObject = JSONObject(response)
 
                     if (jsonObject.optString("status") == "berhasil") {
-                        val arr = jsonObject.getJSONArray("data")
-                        for (i in 0 until arr.length()) {
-                            listTagihan.add(arr.getJSONObject(i))
+                        val arr = jsonObject.optJSONArray("data")
+                        if (arr != null) {
+                            for (i in 0 until arr.length()) {
+                                listTagihan.add(arr.getJSONObject(i))
+                            }
                         }
 
                         if (listTagihan.isEmpty()) {
                             tvKosong.visibility = View.VISIBLE
                         }
+                    } else {
+                        Toast.makeText(requireContext(), jsonObject.optString("pesan", "Tidak ada tagihan"), Toast.LENGTH_SHORT).show()
+                        tvKosong.visibility = View.VISIBLE
                     }
                     adapter.notifyDataSetChanged()
-                } catch (e: JSONException) {
+                } catch (e: Exception) {
                     e.printStackTrace()
                     Toast.makeText(requireContext(), "Gagal memproses data tagihan", Toast.LENGTH_SHORT).show()
                 }
             },
             { error ->
                 progressBar.visibility = View.GONE
-                Toast.makeText(requireContext(), "Gagal memuat tagihan dari server", Toast.LENGTH_SHORT).show()
+                val statusCode = error.networkResponse?.statusCode
+                Log.e("AsabriError", "Tagihan Volley Error Status Code: $statusCode")
+                Toast.makeText(requireContext(), "Gagal memuat tagihan dari server (Code: $statusCode)", Toast.LENGTH_SHORT).show()
             }
         )
+        stringRequest.setShouldCache(false)
         VolleySingleton.getInstance(requireContext()).addToRequestQueue(stringRequest)
     }
 
@@ -108,12 +135,68 @@ class TagihanPelangganFragment : Fragment() {
             .show()
     }
 
-    private fun eksekusiBayarMidtrans(tagihanId: String) {
-        progressBar.visibility = View.VISIBLE
-        val url = ApiConfig.BASE_URL + "tagihan-pelanggan"
+    private fun tampilkanKonfirmasiPembatalan(tagihan: JSONObject) {
+        val langgananId = tagihan.optString("langganan_id")
+        val namaPaket = tagihan.optString("nama_paket")
 
-        val sharedPreferences = requireActivity().getSharedPreferences("AsabriPrefs", Context.MODE_PRIVATE)
-        val idUser = sharedPreferences.getString("ID_USER", "")
+        AlertDialog.Builder(requireContext())
+            .setTitle("Batalkan Langganan WiFi")
+            .setMessage("Apakah Tuan Rihan yakin ingin menghentikan dan membatalkan paket $namaPaket?")
+            .setCancelable(false)
+            .setPositiveButton("Ya, Batalkan") { _, _ ->
+                progressBar.visibility = View.VISIBLE
+
+                // FIXED SINKRONISASI: Menggunakan rute "tagihan"
+                val url = ApiConfig.BASE_URL + "tagihan"
+
+                val postRequest = object : StringRequest(Method.POST, url,
+                    { response ->
+                        progressBar.visibility = View.GONE
+                        try {
+                            val jsonObject = JSONObject(response)
+                            if (jsonObject.optString("status") == "berhasil") {
+                                Toast.makeText(requireContext(), jsonObject.optString("pesan"), Toast.LENGTH_SHORT).show()
+                                loadDaftarTagihan()
+                            } else {
+                                val pesanGagal = jsonObject.optString("pesan", "Gagal membatalkan paket")
+                                Toast.makeText(requireContext(), pesanGagal, Toast.LENGTH_LONG).show()
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            Toast.makeText(requireContext(), "Gagal memproses respons server", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    { error ->
+                        progressBar.visibility = View.GONE
+                        Toast.makeText(requireContext(), "Koneksi ke server gagal", Toast.LENGTH_SHORT).show()
+                    }
+                ) {
+                    override fun getParams(): MutableMap<String, String> {
+                        return hashMapOf(
+                            "aksi" to "batal",
+                            "langganan_id" to langgananId
+                        )
+                    }
+                }
+                VolleySingleton.getInstance(requireContext()).addToRequestQueue(postRequest)
+            }
+            .setNegativeButton("Kembali", null)
+            .show()
+    }
+
+    private fun eksekusiBayarMidtrans(tagihanId: String) {
+        var idUser = arguments?.getString("ARG_USER_ID") ?: ""
+        if (idUser.isEmpty()) {
+            val sharedPreferences = requireContext().getSharedPreferences("AsabriPrefs", Context.MODE_PRIVATE)
+            idUser = sharedPreferences.getString("ID_USER", "") ?: ""
+        }
+
+        if (idUser.isEmpty()) return
+
+        progressBar.visibility = View.VISIBLE
+
+        // FIXED SINKRONISASI: Menggunakan rute "tagihan"
+        val url = ApiConfig.BASE_URL + "tagihan"
 
         val postRequest = object : StringRequest(Method.POST, url,
             { response ->
@@ -149,12 +232,11 @@ class TagihanPelangganFragment : Fragment() {
             override fun getParams(): MutableMap<String, String> {
                 return hashMapOf(
                     "aksi" to "midtrans",
-                    "user_id" to idUser.toString(),
+                    "user_id" to idUser,
                     "tagihan_id" to tagihanId
                 )
             }
         }
-        // 🚀 Hanya panggil satu antrean request yang valid di sini
         VolleySingleton.getInstance(requireContext()).addToRequestQueue(postRequest)
     }
 }

@@ -1,3 +1,12 @@
 <resources>
-    <string name="app_name">AsabriWIFI</string>
+    <string name="app_name">AsabriWiFi</string>
+
+    <string-array name="kategori_keluhan_array">
+        <item>-- Pilih Kategori --</item>
+        <item>Internet Lambat</item>
+        <item>Tidak Ada Koneksi</item>
+        <item>Router Bermasalah</item>
+        <item>Tagihan/Pembayaran</item>
+        <item>Lainnya</item>
+    </string-array>
 </resources>

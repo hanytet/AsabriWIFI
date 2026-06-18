@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginVertical="6dp"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:id="@+id/tvTugasTanggal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:text="Senin, 19/06/2026 10:00"
+                android:textColor="#64748B"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvTugasStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:text="DITUGASKAN"
+                android:textColor="#2563EB"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:background="#EFF6FF"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tvTugasPelanggan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nama Pelanggan\nHp: -\nAlamat: -"
+            android:textColor="#0F172A"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:lineSpacingExtra="3dp"
+            android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:id="@+id/tvTugasDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="[Kategori]\nIsi Kendala WiFi Pelanggan"
+            android:textColor="#475569"
+            android:textSize="13sp"
+            android:background="#F8FAFC"
+            android:padding="12dp"
+            android:lineSpacingExtra="2dp"
+            android:layout_marginBottom="14dp" />
+
+        <Button
+            android:id="@+id/btnTugasBerangkat"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Tandai Berangkat Ke Lokasi"
+            android:backgroundTint="#2563EB"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp"
+            android:visibility="gone"
+            app:cornerRadius="10dp" />
+
+        <LinearLayout
+            android:id="@+id/layoutSelesaiAction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <EditText
+                android:id="@+id/etCatatanSelesai"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Tulis laporan perbaikan (misal: Ganti kabel/FO)..."
+                android:textColor="#1E293B"
+                android:textSize="13sp"
+                android:inputType="textLongMessage"
+                android:gravity="top"
+                android:lines="3"
+                android:padding="12dp"
+                android:background="@android:drawable/editbox_background_normal"
+                android:layout_marginBottom="12dp" />
+
+            <Button
+                android:id="@+id/btnTugasSelesai"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="Konfirmasi Selesai Perbaikan"
+                android:backgroundTint="#16A34A"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                app:cornerRadius="10dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvLabelSelesai"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="✔ Proses Perbaikan Selesai"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="#94A3B8"
+            android:gravity="center"
+            android:padding="10dp"
+            android:visibility="gone"
+            android:background="#F1F5F9" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

@@ -26,6 +26,7 @@ class HomePelangganFragment : Fragment() {
     private lateinit var progressBar: ProgressBar
     private lateinit var tvCountPaket: TextView
     private lateinit var tvCountTagihan: TextView
+    private lateinit var btnKelolaLangganan: Button // 🚀 TAMBAHAN: Variabel global tombol kelola
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,13 +44,38 @@ class HomePelangganFragment : Fragment() {
         progressBar = view.findViewById(R.id.progressBarDashboard)
         tvCountPaket = view.findViewById(R.id.tvCountPaket)
         tvCountTagihan = view.findViewById(R.id.tvCountTagihan)
+        btnKelolaLangganan = view.findViewById(R.id.btnKelolaLangganan) // 🚀 FIXED: Inisialisasi Tombol Baru
+
+        // 🚀 ACTION KLIK: Teruskan aksi langsung ke Fragment Kelola Langganan Terpisah
+        btnKelolaLangganan.setOnClickListener {
+            val sharedPreferences = requireActivity().getSharedPreferences("AsabriPrefs", Context.MODE_PRIVATE)
+            val idUser = sharedPreferences.getString("ID_USER", "") ?: ""
+
+            val fragmentTujuan = LanggananPelangganFragment()
+            val bundle = Bundle()
+            bundle.putString("ARG_USER_ID", idUser.trim())
+            fragmentTujuan.arguments = bundle
+
+            // Dapatkan ID layout container secara dinamis dan aman
+            val containerId = (view.parent as? View)?.id ?: R.id.fragment_container
+
+            activity?.supportFragmentManager?.beginTransaction()?.apply {
+                replace(containerId, fragmentTujuan)
+                addToBackStack(null) // Biarkan user bisa menekan tombol back HP untuk kembali ke Home
+                commit()
+            }
+        }
 
         view.findViewById<Button>(R.id.btnBayar).setOnClickListener {
-            Toast.makeText(requireContext(), "Membuka Menu Pembayaran...", Toast.LENGTH_SHORT).show()
+            // Alihkan otomatis ke menu tagihan yang ada di bottom nav
+            val containerId = (view.parent as? View)?.id ?: R.id.fragment_container
+            activity?.supportFragmentManager?.beginTransaction()?.replace(containerId, TagihanPelangganFragment())?.commit()
         }
 
         view.findViewById<Button>(R.id.btnKomplain).setOnClickListener {
-            Toast.makeText(requireContext(), "Membuka Layanan Keluhan...", Toast.LENGTH_SHORT).show()
+            // Alihkan otomatis ke menu keluhan
+            val containerId = (view.parent as? View)?.id ?: R.id.fragment_container
+            activity?.supportFragmentManager?.beginTransaction()?.replace(containerId, KeluhanPelangganFragment())?.commit()
         }
 
         fetchDashboardData()
