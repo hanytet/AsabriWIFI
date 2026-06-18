@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F5F7FA">
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLaporan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabSelectedTextColor="#1976D2"
+        app:tabIndicatorColor="#1976D2"
+        android:background="@android:color/white"/>
+
+    <LinearLayout
+        android:id="@+id/layoutFilterHarian"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:gravity="center">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pilih Tanggal: "
+            android:textColor="#333333"/>
+        <EditText
+            android:id="@+id/etTanggalLaporan"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:hint="YYYY-MM-DD"
+            android:focusable="false"
+            android:clickable="true"
+            android:background="@android:drawable/editbox_background_normal"
+            android:paddingHorizontal="12dp"
+            android:textSize="14sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutFilterBulanan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:visibility="gone"
+        android:weightSum="2">
+        <Spinner
+            android:id="@+id/spinnerBulanLaporan"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="@android:drawable/btn_dropdown"/>
+        <Spinner
+            android:id="@+id/spinnerTahunLaporan"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="@android:drawable/btn_dropdown"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:weightSum="3">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/white"
+            android:padding="10dp"
+            android:layout_margin="4dp"
+            android:orientation="vertical"
+            android:gravity="center">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Total" android:textSize="11sp"/>
+            <TextView android:id="@+id/tvSummaryTotal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Rp 0" android:textStyle="bold" android:textColor="#2E7D32" android:textSize="13sp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/white"
+            android:padding="10dp"
+            android:layout_margin="4dp"
+            android:orientation="vertical"
+            android:gravity="center">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Transfer" android:textSize="11sp"/>
+            <TextView android:id="@+id/tvSummaryTransfer" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Rp 0" android:textStyle="bold" android:textColor="#1976D2" android:textSize="13sp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/white"
+            android:padding="10dp"
+            android:layout_margin="4dp"
+            android:orientation="vertical"
+            android:gravity="center">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tunai" android:textSize="11sp"/>
+            <TextView android:id="@+id/tvSummaryTunai" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Rp 0" android:textStyle="bold" android:textColor="#F57F17" android:textSize="13sp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="8dp">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvTransaksiLaporan"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+        <TextView
+            android:id="@+id/tvLaporanKosong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tidak ada riwayat transaksi"
+            android:layout_gravity="center"
+            android:textColor="#888888"
+            android:visibility="gone"/>
+    </FrameLayout>
+</LinearLayout>

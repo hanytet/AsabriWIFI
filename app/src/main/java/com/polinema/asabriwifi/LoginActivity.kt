@@ -38,7 +38,7 @@ class LoginActivity : AppCompatActivity() {
                 btnLogin.text = "Memproses..."
                 btnLogin.isEnabled = false
 
-                val url = "http://192.168.1.17:8000/api/login"
+                val url = "http://192.168.4.66/api/login"
 
                 val stringRequest = object : StringRequest(
                     Request.Method.POST, url,

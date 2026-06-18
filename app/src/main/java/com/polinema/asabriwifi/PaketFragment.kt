@@ -3,6 +3,7 @@ package com.polinema.asabriwifi
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -38,17 +39,43 @@ class PaketFragment : Fragment() {
         paketAdapter = PaketAdapter(listPaket)
         rvPaket.adapter = paketAdapter
 
+        // 1. REGISTRASI RECYCLERVIEW UNTUK CONTEXT MENU RESMI
+        registerForContextMenu(rvPaket)
+
         fabTambah.setOnClickListener {
             tampilkanDialogForm(null)
         }
 
+        // KLIK BIASA: Menampilkan info singkat
         paketAdapter.onItemClick = { paketTerpilih ->
-            tampilkanDialogForm(paketTerpilih)
+            val nama = paketTerpilih.optString("nama_paket", "")
+            Toast.makeText(requireContext(), "Paket: $nama\n(Tahan lama untuk opsi Edit / Hapus)", Toast.LENGTH_SHORT).show()
         }
 
         fetchDataPaket()
 
         return view
+    }
+
+    // 2. MENANGKAP PILIHAN DARI CONTEXT MENU RESMI ANDROID
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        val position = paketAdapter.positionTerpilih
+        if (position >= 0 && position < listPaket.size) {
+            val paketTerpilih = listPaket[position]
+            val paketId = paketTerpilih.optString("id", "")
+
+            when (item.itemId) {
+                201 -> { // Pilihan Edit Paket
+                    tampilkanDialogForm(paketTerpilih)
+                    return true
+                }
+                202 -> { // Pilihan Hapus Paket
+                    konfirmasiHapus(paketId)
+                    return true
+                }
+            }
+        }
+        return super.onContextItemSelected(item)
     }
 
     private fun tampilkanDialogForm(paketLama: JSONObject?) {
@@ -60,7 +87,6 @@ class PaketFragment : Fragment() {
         val etDeskripsi = dialogView.findViewById<EditText>(R.id.etDeskripsi)
         val spinnerStatus = dialogView.findViewById<Spinner>(R.id.spinnerStatus)
 
-        // 1. SIAPKAN ISI SPINNER
         val pilihanStatus = arrayOf("aktif", "nonaktif")
         val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, pilihanStatus)
         spinnerStatus.adapter = spinnerAdapter
@@ -68,7 +94,6 @@ class PaketFragment : Fragment() {
         var paketId = ""
         var isEdit = false
 
-        // 2. JIKA EDIT, MASUKKAN DATA LAMA KE FORM TERMASUK STATUSNYA
         if (paketLama != null) {
             isEdit = true
             tvDialogTitle.text = "Edit Paket"
@@ -81,13 +106,12 @@ class PaketFragment : Fragment() {
                     etDeskripsi.setText(paketLama.getString("deskripsi"))
                 }
 
-                // Set posisi spinner sesuai status di database
                 if (paketLama.has("status") && !paketLama.isNull("status")) {
                     val statusDb = paketLama.getString("status")
                     if (statusDb == "nonaktif") {
-                        spinnerStatus.setSelection(1) // Pilih urutan ke-2 ("nonaktif")
+                        spinnerStatus.setSelection(1)
                     } else {
-                        spinnerStatus.setSelection(0) // Pilih urutan ke-1 ("aktif")
+                        spinnerStatus.setSelection(0)
                     }
                 }
             } catch (e: Exception) { e.printStackTrace() }
@@ -100,7 +124,7 @@ class PaketFragment : Fragment() {
                 val kecepatan = etKecepatan.text.toString()
                 val harga = etHarga.text.toString()
                 val deskripsi = etDeskripsi.text.toString()
-                val statusPilihan = spinnerStatus.selectedItem.toString() // Ambil nilai "aktif" atau "nonaktif"
+                val statusPilihan = spinnerStatus.selectedItem.toString()
 
                 if (nama.isEmpty() || kecepatan.isEmpty() || harga.isEmpty()) {
                     Toast.makeText(requireContext(), "Nama, Kecepatan, Harga wajib diisi!", Toast.LENGTH_SHORT).show()
@@ -110,12 +134,7 @@ class PaketFragment : Fragment() {
             }
             .setNegativeButton("Batal", null)
 
-        if (isEdit) {
-            dialogBuilder.setNeutralButton("Hapus") { _, _ ->
-                konfirmasiHapus(paketId)
-            }
-        }
-
+        // Tombol netral hapus bawaan dialog lama kita hilangkan karena fungsinya sudah dipindah ke Context Menu
         dialogBuilder.show()
     }
 
@@ -124,7 +143,6 @@ class PaketFragment : Fragment() {
             .setTitle("Hapus Paket")
             .setMessage("Yakin ingin menghapus paket ini secara permanen?")
             .setPositiveButton("Ya, Hapus") { _, _ ->
-
                 val url = ApiConfig.BASE_URL + "paket?aksi=hapus"
                 val stringRequest = object : StringRequest(
                     Request.Method.POST, url,
@@ -141,9 +159,7 @@ class PaketFragment : Fragment() {
                             Toast.makeText(requireContext(), "Gagal memproses data", Toast.LENGTH_SHORT).show()
                         }
                     },
-                    { error ->
-                        Toast.makeText(requireContext(), "Gagal terhubung ke server", Toast.LENGTH_SHORT).show()
-                    }
+                    { Toast.makeText(requireContext(), "Gagal terhubung ke server", Toast.LENGTH_SHORT).show() }
                 ) {
                     override fun getParams(): MutableMap<String, String> {
                         val params = HashMap<String, String>()
@@ -152,16 +168,12 @@ class PaketFragment : Fragment() {
                     }
                 }
                 VolleySingleton.getInstance(requireContext()).addToRequestQueue(stringRequest)
-
             }
             .setNegativeButton("Batal", null)
             .show()
     }
 
-    // 3. TAMBAHKAN PARAMETER STATUS SAAT MENGIRIM DATA
     private fun kirimDataKeLaravel(isEdit: Boolean, id: String, nama: String, kecepatan: String, harga: String, deskripsi: String, statusPaket: String) {
-        // Cek apakah aksi ini khusus untuk mengubah status saja lewat Laravel
-        // (Tapi di sini kita kirim sekaligus dengan update datanya)
         val aksi = if (isEdit) "edit" else "tambah"
         val url = ApiConfig.BASE_URL + "paket?aksi=$aksi"
 
@@ -172,8 +184,6 @@ class PaketFragment : Fragment() {
                     val jsonObject = JSONObject(response)
                     val status = jsonObject.getString("status")
                     if (status == "berhasil") {
-
-                        // JIKA INI EDIT, KITA TEMBAK JUGA API KHUSUS STATUSNYA BIAR PASTI BERUBAH
                         if (isEdit) {
                             val aksiStatus = if (statusPaket == "aktif") "aktifkan" else "nonaktif"
                             updateStatusKhusus(id, aksiStatus)
@@ -181,7 +191,6 @@ class PaketFragment : Fragment() {
                             Toast.makeText(requireContext(), "Data berhasil disimpan!", Toast.LENGTH_SHORT).show()
                             fetchDataPaket()
                         }
-
                     } else {
                         val pesan = jsonObject.getString("pesan")
                         Toast.makeText(requireContext(), "Gagal: $pesan", Toast.LENGTH_SHORT).show()
@@ -190,9 +199,7 @@ class PaketFragment : Fragment() {
                     Toast.makeText(requireContext(), "Gagal membaca balasan server", Toast.LENGTH_SHORT).show()
                 }
             },
-            { error ->
-                Toast.makeText(requireContext(), "Gagal terhubung ke server", Toast.LENGTH_SHORT).show()
-            }
+            { Toast.makeText(requireContext(), "Gagal terhubung ke server", Toast.LENGTH_SHORT).show() }
         ) {
             override fun getParams(): MutableMap<String, String> {
                 val params = HashMap<String, String>()
@@ -201,27 +208,21 @@ class PaketFragment : Fragment() {
                 params["kecepatan"] = kecepatan
                 params["harga"] = harga
                 params["deskripsi"] = deskripsi
-                // Di controller Anda saat tambah, statusnya otomatis 'aktif', jadi kita ikuti saja.
-                // Jika ingin dinamis, controller PHP Anda harus disesuaikan sedikit.
                 return params
             }
         }
         VolleySingleton.getInstance(requireContext()).addToRequestQueue(stringRequest)
     }
 
-    // FUNGSI BANTUAN UNTUK MENEMBAK API STATUS KHUSUS DARI LARAVEL ANDA
     private fun updateStatusKhusus(id: String, aksiStatus: String) {
         val url = ApiConfig.BASE_URL + "paket?aksi=$aksiStatus"
         val stringRequest = object : StringRequest(
             Request.Method.POST, url,
             { _ ->
-                // Status berhasil diubah, refresh data
                 Toast.makeText(requireContext(), "Data & Status berhasil diperbarui!", Toast.LENGTH_SHORT).show()
                 fetchDataPaket()
             },
-            { _ ->
-                fetchDataPaket() // Refresh saja meskipun gagal
-            }
+            { _ -> fetchDataPaket() }
         ) {
             override fun getParams(): MutableMap<String, String> {
                 val params = HashMap<String, String>()
@@ -248,7 +249,7 @@ class PaketFragment : Fragment() {
                     }
                 } catch (e: Exception) { e.printStackTrace() }
             },
-            { error ->
+            { _ ->
                 if (isAdded) Toast.makeText(requireContext(), "Gagal terhubung ke server", Toast.LENGTH_SHORT).show()
             }
         )

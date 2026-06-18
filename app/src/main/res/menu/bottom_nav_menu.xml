@@ -4,12 +4,24 @@
         android:id="@+id/nav_dashboard"
         android:icon="@android:drawable/ic_menu_info_details"
         android:title="Dashboard" />
+
     <item
         android:id="@+id/nav_paket"
         android:icon="@android:drawable/ic_menu_agenda"
         android:title="Paket" />
+
     <item
-        android:id="@+id/nav_pelanggan"
-        android:icon="@android:drawable/ic_menu_myplaces"
-        android:title="Pelanggan" />
+        android:id="@+id/nav_keluhan"
+        android:icon="@android:drawable/ic_menu_help"
+        android:title="Keluhan" />
+
+    <item
+        android:id="@+id/nav_pembayaran"
+        android:icon="@android:drawable/ic_menu_save"
+        android:title="Pembayaran" />
+
+    <item
+        android:id="@+id/nav_monitoring"
+        android:icon="@android:drawable/ic_menu_view"
+        android:title="Monitoring" />
 </menu>

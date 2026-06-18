@@ -30,12 +30,12 @@ class MainActivity : AppCompatActivity() {
 
         bottomNav = findViewById(R.id.bottomNavigationView)
 
-        // 1. Tampilkan DashboardFragment sebagai halaman pertama saat aplikasi dibuka
+        // 1. Tampilkan DashboardFragment sebagai halaman utama saat masuk
         if (savedInstanceState == null) {
             loadFragment(DashboardFragment())
         }
 
-        // 2. Atur sistem ganti layar saat tab bawah diklik
+        // 2. Sistem navigasi bawah yang sudah distandardisasi maksimal 5 item (ANTI-CRASH)
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_dashboard -> {
@@ -43,13 +43,19 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_paket -> {
-                    // Tampilkan PaketFragment saat diklik!
                     loadFragment(PaketFragment())
                     true
                 }
-                R.id.nav_pelanggan -> {
-                    Toast.makeText(this, "Halaman Pelanggan belum dibuat", Toast.LENGTH_SHORT).show()
-                    loadFragment(PelangganFragment())
+                R.id.nav_keluhan -> {
+                    loadFragment(KeluhanFragment())
+                    true
+                }
+                R.id.nav_pembayaran -> {
+                    loadFragment(PembayaranFragment())
+                    true
+                }
+                R.id.nav_monitoring -> {
+                    loadFragment(MonitoringFragment())
                     true
                 }
                 else -> false
@@ -57,14 +63,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Fungsi canggih untuk menempelkan Fragment ke FrameLayout yang kosong tadi
-    private fun loadFragment(fragment: Fragment) {
+    // Fungsi navigasi perpindahan fragment satu pintu
+    fun loadFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.frameLayout, fragment)
             .commit()
     }
 
-    // Menu Logout (Tidak berubah)
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.top_menu, menu)
         return true

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F7FA">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Kelola Pembayaran"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="4dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Kelola dan verifikasi pembayaran dari pelanggan"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="12dp" />
+
+        <!-- Filter Tab mirip Laravel Web -->
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayoutFilter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#F5F7FA"
+            app:tabMode="fixed"
+            app:tabGravity="fill"
+            app:tabIndicatorColor="#2196F3"
+            app:tabTextColor="#666666"
+            app:tabSelectedTextColor="#2196F3"
+            app:tabTextAppearance="@android:style/TextAppearance.Small" />
+
+        <!-- Frame penampung data kosong / loading spinner -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvPembayaran"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingBottom="80dp" />
+
+            <TextView
+                android:id="@+id/tvDataKosong"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tidak ada data pembayaran ditemukan."
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:textColor="#999999"/>
+        </FrameLayout>
+    </LinearLayout>
+
+    <!-- Tombol Catat Tunai di Android -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabCatatTunai"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:contentDescription="Catat Tunai"
+        app:srcCompat="@android:drawable/ic_input_add"
+        app:backgroundTint="#4CAF50"
+        app:tint="#FFFFFF" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

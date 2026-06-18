@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Detail Transaksi Pelanggan"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginBottom="16dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#F5F5F5"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:id="@+id/dtPelanggan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pelanggan: -"
+                android:layout_marginBottom="6dp"
+                android:textColor="#333333"/>
+
+            <TextView
+                android:id="@+id/dtWaktu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Waktu Bayar: -"
+                android:layout_marginBottom="6dp"
+                android:textColor="#333333"/>
+
+            <TextView
+                android:id="@+id/dtMetode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Metode: -"
+                android:layout_marginBottom="6dp"
+                android:textColor="#333333"/>
+
+            <TextView
+                android:id="@+id/dtTotal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Total Dibayar: Rp 0"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="#2196F3"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvLabelBukti"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bukti Transfer Pelanggan:"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp"
+            android:visibility="visible"/>
+
+        <ImageView
+            android:id="@+id/ivBuktiTransfer"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:background="#E0E0E0"
+            android:layout_marginBottom="16dp"
+            android:visibility="visible"
+            android:contentDescription="Bukti Transfer" />
+
+        <TextView
+            android:id="@+id/tvNotifMidtrans"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Terverifikasi Otomatis (Midtrans)\nSistem payment gateway telah memverifikasi pembayaran ini secara otomatis."
+            android:background="#E8F5E9"
+            android:textColor="#2E7D32"
+            android:padding="10dp"
+            android:textSize="12sp"
+            android:layout_marginBottom="10dp"
+            android:visibility="gone"/>
+    </LinearLayout>
+</ScrollView>

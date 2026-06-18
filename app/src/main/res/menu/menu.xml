@@ -12,4 +12,9 @@
         android:id="@+id/nav_pelanggan"
         android:icon="@android:drawable/ic_menu_myplaces"
         android:title="Pelanggan" />
+
+    <item
+        android:id="@+id/nav_pembayaran"
+        android:icon="@android:drawable/ic_menu_save"
+        android:title="Pembayaran" />
 </menu>
