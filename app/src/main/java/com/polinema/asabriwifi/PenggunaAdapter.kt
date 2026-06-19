@@ -1,6 +1,7 @@
 package com.polinema.asabriwifi
 
 import android.graphics.Color
+import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,16 +10,29 @@ import androidx.recyclerview.widget.RecyclerView
 import org.json.JSONObject
 
 class PenggunaAdapter(
-    private val listUser: ArrayList<JSONObject>,
-    private val onItemClickListener: (JSONObject) -> Unit
+    private val listUser: ArrayList<JSONObject>
 ) : RecyclerView.Adapter<PenggunaAdapter.ViewHolder>() {
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        // Gunakan nullable TextView (?) untuk berjaga-jaga jika ID di XML salah ketik
+    // 🚀 POSISI TERPILIH: Menyimpan indeks item yang sedang di-long press untuk Fragment
+    var positionTerpilih: Int = -1
+
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnCreateContextMenuListener {
         val tvNama: TextView? = itemView.findViewById(R.id.tvNamaPengguna)
         val tvEmail: TextView? = itemView.findViewById<TextView>(R.id.tvEmailPengguna)
         val tvNik: TextView? = itemView.findViewById<TextView>(R.id.tvNikPengguna)
         val tvRole: TextView? = itemView.findViewById<TextView>(R.id.tvRolePengguna)
+
+        init {
+            // Daftarkan View Holder ke sistem Context Menu Android
+            itemView.setOnCreateContextMenuListener(this)
+        }
+
+        override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
+            menu?.setHeaderTitle("Opsi Pengguna")
+            menu?.add(this.adapterPosition, 201, 0, "Edit Informasi Pengguna")
+            menu?.add(this.adapterPosition, 202, 1, "Reset Password ke Default")
+            menu?.add(this.adapterPosition, 203, 2, "Hapus Akun Pengguna")
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -29,7 +43,6 @@ class PenggunaAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = listUser[position]
         try {
-            // Gunakan safe call (?.) agar jika ID XML salah, aplikasi tidak akan crash keluar sendiri
             holder.tvNama?.text = item.optString("name", "-")
             holder.tvEmail?.text = item.optString("email", "-")
 
@@ -54,8 +67,13 @@ class PenggunaAdapter(
                 }
             }
 
-            holder.itemView.setOnClickListener {
-                onItemClickListener(item)
+            // 🚀 HAPUS KLIK BIASA: Di-set null agar ketukan singkat tidak memicu aksi apa pun
+            holder.itemView.setOnClickListener(null)
+
+            // 🚀 MURNI LONG CLICK: Menyimpan posisi indeks daftar sebelum menu melayang Android muncul
+            holder.itemView.setOnLongClickListener {
+                positionTerpilih = holder.adapterPosition
+                false // return false agar ContextMenu bawaan OS mencuat keluar
             }
 
         } catch (e: Exception) {

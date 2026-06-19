@@ -42,22 +42,22 @@ class DashboardFragment : Fragment() {
         tvPemasukanBulanIni = view.findViewById(R.id.tvPemasukanBulanIni)
         btnRefresh = view.findViewById(R.id.btnRefresh)
 
-        // Inisialisasi komponen menu Tindakan Cepat kustom 3 kolom
+
         btnMenuLaporan = view.findViewById(R.id.btnMenuLaporan)
         btnMenuPelanggan = view.findViewById(R.id.btnMenuPelanggan)
         btnMenuPengguna = view.findViewById(R.id.btnMenuPengguna)
 
-        // Set Listener untuk pindah halaman ke Laporan Kas Keuangan
+
         btnMenuLaporan.setOnClickListener {
             (activity as? MainActivity)?.loadFragment(LaporanFragment())
         }
 
-        // Set Listener untuk pindah halaman ke Kelola Pelanggan
+
         btnMenuPelanggan.setOnClickListener {
             (activity as? MainActivity)?.loadFragment(PelangganFragment())
         }
 
-        // Set Listener untuk pindah halaman ke Kelola User / Pengguna Sistem
+
         btnMenuPengguna.setOnClickListener {
             (activity as? MainActivity)?.loadFragment(PenggunaFragment())
         }

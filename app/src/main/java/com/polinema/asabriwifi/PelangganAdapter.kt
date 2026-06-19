@@ -1,5 +1,7 @@
 package com.polinema.asabriwifi
 
+import android.graphics.Color
+import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,13 +11,25 @@ import org.json.JSONObject
 
 class PelangganAdapter(private val listPelanggan: ArrayList<JSONObject>) : RecyclerView.Adapter<PelangganAdapter.PelangganViewHolder>() {
 
-    var onItemClick: ((JSONObject) -> Unit)? = null
+    // Menyimpan posisi untuk ContextMenu saat mendeteksi Klik Lama (Long Click)
+    var positionTerpilih: Int = -1
 
-    inner class PelangganViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class PelangganViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnCreateContextMenuListener {
         val tvNamaPelanggan: TextView = itemView.findViewById(R.id.tvNamaPelanggan)
         val tvAlamatPelanggan: TextView = itemView.findViewById(R.id.tvAlamatPelanggan)
         val tvNoHpPelanggan: TextView = itemView.findViewById(R.id.tvNoHpPelanggan)
         val tvStatusPelanggan: TextView = itemView.findViewById(R.id.tvStatusPelanggan)
+
+        init {
+            // Daftarkan View Holder ke sistem Context Menu Android
+            itemView.setOnCreateContextMenuListener(this)
+        }
+
+        override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
+            menu?.setHeaderTitle("Opsi Pelanggan")
+            menu?.add(this.adapterPosition, 101, 0, "Edit Pelanggan")
+            menu?.add(this.adapterPosition, 102, 1, "Hapus Pelanggan")
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PelangganViewHolder {
@@ -27,49 +41,39 @@ class PelangganAdapter(private val listPelanggan: ArrayList<JSONObject>) : Recyc
         val pelanggan = listPelanggan[position]
 
         try {
-            // Gunakan optString agar kebal terhadap data kosong (null) dari Laravel
             val nama = pelanggan.optString("name", "Tanpa Nama")
-
-            // Cek apakah alamat null atau kosong
             val alamat = if (!pelanggan.isNull("alamat") && pelanggan.optString("alamat").isNotEmpty()) {
                 pelanggan.optString("alamat")
-            } else {
-                "-"
-            }
+            } else "-"
 
-            // Cek apakah no_hp null atau kosong
             val noHp = if (!pelanggan.isNull("no_hp") && pelanggan.optString("no_hp").isNotEmpty()) {
                 pelanggan.optString("no_hp")
-            } else {
-                "-"
-            }
+            } else "-"
 
             val status = pelanggan.optString("status", "Aktif").uppercase()
 
-            // Pasang ke komponen layar
             holder.tvNamaPelanggan.text = nama
             holder.tvAlamatPelanggan.text = "Alamat: $alamat"
             holder.tvNoHpPelanggan.text = "No HP: $noHp"
 
-            // Opsional: Beri warna beda jika statusnya nonaktif
             holder.tvStatusPelanggan.text = status
-            if (status == "NONAKTIF") {
-                holder.tvStatusPelanggan.setTextColor(android.graphics.Color.parseColor("#F44336")) // Merah
-            } else {
-                holder.tvStatusPelanggan.setTextColor(android.graphics.Color.parseColor("#4CAF50")) // Hijau
-            }
+            holder.tvStatusPelanggan.setTextColor(if (status == "NONAKTIF") Color.parseColor("#F44336") else Color.parseColor("#4CAF50"))
 
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        } catch (e: Exception) { e.printStackTrace() }
 
-        // Aksi saat kotak diklik
-        holder.itemView.setOnClickListener {
-            onItemClick?.invoke(pelanggan)
+        // 🚀 HAPUS ATAU KOSONGKAN KLIK BIASA
+        // Jika tidak ingin ada aksi apa pun saat diklik biasa,
+        // Anda bisa menghapus blok setOnClickListener ini sepenuhnya.
+        holder.itemView.setOnClickListener(null)
+
+        // 🚀 BIARKAN LONG CLICK YANG BEKERJA:
+        // Sistem Android secara otomatis akan menampilkan Context Menu
+        // yang sudah didaftarkan di atas saat item ditekan lama.
+        holder.itemView.setOnLongClickListener {
+            positionTerpilih = holder.adapterPosition
+            false // return false agar ContextMenu bawaan Android muncul
         }
     }
 
-    override fun getItemCount(): Int {
-        return listPelanggan.size
-    }
+    override fun getItemCount(): Int = listPelanggan.size
 }

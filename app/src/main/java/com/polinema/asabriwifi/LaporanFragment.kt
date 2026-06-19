@@ -72,11 +72,11 @@ class LaporanFragment : Fragment() {
         adapter = TransaksiLaporanAdapter(listTransaksi, true)
         rvTransaksi.adapter = adapter
 
-        // Setup Spinners
+
         spinnerBulan.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, namaBulan)
         spinnerTahun.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, pilihanTahun)
 
-        // Set Default Date Saat Ini
+
         val kalender = Calendar.getInstance()
         val tglSkg = "${kalender.get(Calendar.YEAR)}-${String.format("%02d", kalender.get(Calendar.MONTH) + 1)}-${String.format("%02d", kalender.get(Calendar.DAY_OF_MONTH))}"
         etTanggal.setText(tglSkg)
@@ -107,7 +107,6 @@ class LaporanFragment : Fragment() {
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
 
-        // On Click DatePicker untuk Harian
         etTanggal.setOnClickListener {
             DatePickerDialog(requireContext(), { _, year, month, dayOfMonth ->
                 val res = "$year-${String.format("%02d", month + 1)}-${String.format("%02d", dayOfMonth)}"

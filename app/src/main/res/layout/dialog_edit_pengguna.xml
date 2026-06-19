@@ -6,12 +6,12 @@
     android:padding="20dp">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Nama Pengguna"
-        android:textStyle="bold"
+        android:text="Nama Lengkap"
         android:textColor="#333333"
-        android:textSize="12sp" />
+        android:textStyle="bold"
+        android:textSize="14sp" />
 
     <EditText
         android:id="@+id/edEditNama"
@@ -22,21 +22,59 @@
         android:background="@android:drawable/editbox_background_normal"
         android:inputType="textPersonName"
         android:paddingHorizontal="10dp"
-        android:textSize="14sp" />
+        android:textSize="15sp" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hak Akses (Role)"
-        android:textStyle="bold"
+        android:text="Email"
         android:textColor="#333333"
-        android:textSize="12sp" />
+        android:textStyle="bold"
+        android:textSize="14sp" />
+
+    <EditText
+        android:id="@+id/edEditEmail"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="16dp"
+        android:background="@android:drawable/editbox_background_normal"
+        android:inputType="textEmailAddress"
+        android:paddingHorizontal="10dp"
+        android:textSize="15sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="NIK (Nomor Induk Kependudukan)"
+        android:textColor="#333333"
+        android:textStyle="bold"
+        android:textSize="14sp" />
+
+    <EditText
+        android:id="@+id/edEditNik"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="16dp"
+        android:background="@android:drawable/editbox_background_normal"
+        android:inputType="number"
+        android:paddingHorizontal="10dp"
+        android:textSize="15sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Role Akses"
+        android:textColor="#333333"
+        android:textStyle="bold"
+        android:textSize="14sp" />
 
     <Spinner
         android:id="@+id/spEditRole"
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:layout_marginTop="6dp"
-        android:background="@android:drawable/btn_dropdown" />
+        android:spinnerMode="dropdown" />
 
 </LinearLayout>

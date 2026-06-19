@@ -19,12 +19,9 @@ class CustomerDashboardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_customer_dashboard)
 
-        // 🚀 AMBIL ID DARI LOGIN: Ambil ID_USER yang valid dari SharedPreferences di level Activity
+        // 🚀 AMBIL ID DARI LOGIN: Mengambil ID_USER yang asli dan valid dari SharedPreferences hasil login
         val sharedPreferences = getSharedPreferences("AsabriPrefs", Context.MODE_PRIVATE)
         idUserTerdaftar = sharedPreferences.getString("ID_USER", "") ?: ""
-
-        // 🚀🔥 GOD MODE HACK: Paksa ID menjadi 6 (Elya) untuk membypass sistem login yang macet!
-        idUserTerdaftar = "6"
 
         bottomNav = findViewById(R.id.bottom_navigation_customer)
 
@@ -49,7 +46,7 @@ class CustomerDashboardActivity : AppCompatActivity() {
                 R.id.nav_home -> fragmentTerpilih = HomePelangganFragment()
                 R.id.nav_paket -> fragmentTerpilih = PaketPelangganFragment()
 
-                // 🚀 TARUH DI SINI: Inisialisasi Tagihan Fragment
+                // Inisialisasi Tagihan Fragment
                 R.id.nav_tagihan -> fragmentTerpilih = TagihanPelangganFragment()
 
                 R.id.nav_riwayat -> fragmentTerpilih = RiwayatPembayaranFragment()
@@ -57,7 +54,7 @@ class CustomerDashboardActivity : AppCompatActivity() {
             }
 
             if (fragmentTerpilih != null) {
-                // 🚀 SUNTIK ID SECARA PAKSA: Selipkan Bundle ID agar fragment tujuan bisa membaca user_id yang valid
+                // SUNTIK ID ASLI: Selipkan Bundle ID agar fragment tujuan membaca user_id akun yang sedang login
                 fragmentTerpilih.arguments = buatBundleKirimID()
 
                 supportFragmentManager.beginTransaction()
@@ -69,11 +66,14 @@ class CustomerDashboardActivity : AppCompatActivity() {
             }
         }
     }
-
-    // 🚀 FUNGSI BUNDLE: Membentuk paket data ID untuk dikirimkan ke Fragment
+    
     private fun buatBundleKirimID(): Bundle {
+        val sharedPreferences = getSharedPreferences("AsabriPrefs", Context.MODE_PRIVATE)
+        val namaUser = sharedPreferences.getString("NAMA_USER", "Pelanggan") ?: "Pelanggan"
+
         val bundle = Bundle()
         bundle.putString("ARG_USER_ID", idUserTerdaftar)
+        bundle.putString("ARG_NAMA_USER", namaUser)
         return bundle
     }
 

@@ -56,7 +56,7 @@ class KeluhanFragment : Fragment() {
 
         registerForContextMenu(rvKeluhan)
 
-        // PENYESUAIAN ENGINE: Pengganti OnTabSelectedListener menggunakan RadioGroup Checked Change
+
         rgFilterKeluhan.setOnCheckedChangeListener { _, checkedId ->
             statusAktif = when (checkedId) {
                 R.id.rbSemuaKeluhan -> "semua"

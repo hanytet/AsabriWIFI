@@ -46,7 +46,6 @@ class LoginActivity : AppCompatActivity() {
             finish()
         }
 
-        // PERBAIKAN SINKRONISASI: Menghubungkan teks daftar langsung ke RegisterActivity
         tvDaftarSekarang.setOnClickListener {
             Toast.makeText(this, "Membuka Menu Pendaftaran Pelanggan Baru", Toast.LENGTH_SHORT).show()
             startActivity(Intent(this, RegisterActivity::class.java))
@@ -78,16 +77,32 @@ class LoginActivity : AppCompatActivity() {
 
                                 val role = jsonObject.optString("role", "")
 
+                                // 🚀 EKSTRAKSI NAMA PENGGUNA SECARA AMAN DARI JSON LARAVEL
+                                var namaUser = jsonObject.optString("nama", "")
+                                if (namaUser.isEmpty() || namaUser == "null") {
+                                    namaUser = jsonObject.optString("name", "")
+                                }
+                                // Jika API Anda membungkus data user ke dalam objek "user" { "name": "Yuki Asuna" }
+                                if ((namaUser.isEmpty() || namaUser == "null") && jsonObject.has("user")) {
+                                    val userObj = jsonObject.getJSONObject("user")
+                                    namaUser = userObj.optString("name", userObj.optString("nama", "Pelanggan"))
+                                }
+                                if (namaUser.isEmpty() || namaUser == "null") {
+                                    namaUser = "Pelanggan"
+                                }
+
                                 if (idUser.isEmpty() || idUser == "null") {
                                     Toast.makeText(this@LoginActivity, "FATAL: Server tidak mengirimkan ID User!", Toast.LENGTH_LONG).show()
                                 } else {
+                                    // Simpan semua data identitas sesi baru termasuk NAMA_USER
                                     sharedPreferences.edit()
                                         .putBoolean("IS_LOGGED_IN", true)
                                         .putString("ID_USER", idUser.trim())
+                                        .putString("NAMA_USER", namaUser.trim()) // SINKRONISASI BARU
                                         .putString("ROLE", role.trim())
                                         .commit()
 
-                                    Toast.makeText(this@LoginActivity, "Login Sukses! (ID: $idUser)", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@LoginActivity, "Login Sukses!", Toast.LENGTH_SHORT).show()
 
                                     val intent = when {
                                         role.contains("admin", ignoreCase = true) -> {

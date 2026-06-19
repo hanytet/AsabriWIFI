@@ -26,16 +26,14 @@ class HomePelangganFragment : Fragment() {
     private lateinit var progressBar: ProgressBar
     private lateinit var tvCountPaket: TextView
     private lateinit var tvCountTagihan: TextView
-    private lateinit var btnKelolaLangganan: Button // 🚀 TAMBAHAN: Variabel global tombol kelola
+    private lateinit var btnKelolaLangganan: Button
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate layout spesifik fragment_home_pelanggan
         val view = inflater.inflate(R.layout.fragment_home_pelanggan, container, false)
 
-        // Ikat Widget berdasarkan view root fragment
         tvWelcome = view.findViewById(R.id.tvWelcome)
         tvNotifBadge = view.findViewById(R.id.tvNotifBadge)
         tvTotalHutang = view.findViewById(R.id.tvTotalHutang)
@@ -44,11 +42,19 @@ class HomePelangganFragment : Fragment() {
         progressBar = view.findViewById(R.id.progressBarDashboard)
         tvCountPaket = view.findViewById(R.id.tvCountPaket)
         tvCountTagihan = view.findViewById(R.id.tvCountTagihan)
-        btnKelolaLangganan = view.findViewById(R.id.btnKelolaLangganan) // 🚀 FIXED: Inisialisasi Tombol Baru
+        btnKelolaLangganan = view.findViewById(R.id.btnKelolaLangganan)
 
-        // 🚀 ACTION KLIK: Teruskan aksi langsung ke Fragment Kelola Langganan Terpisah
+        // 🚀 AMBIL DATA DARI SHREDPREFS YANG AKURAT
+        val sharedPreferences = requireActivity().getSharedPreferences("AsabriPrefs", Context.MODE_PRIVATE)
+        val namaUser = sharedPreferences.getString("NAMA_USER", "Pelanggan") ?: "Pelanggan"
+
+        if (namaUser != "Pelanggan" && namaUser.isNotEmpty()) {
+            tvWelcome.text = "Halo, $namaUser!"
+        } else {
+            tvWelcome.text = "Halo, Pelanggan!"
+        }
+
         btnKelolaLangganan.setOnClickListener {
-            val sharedPreferences = requireActivity().getSharedPreferences("AsabriPrefs", Context.MODE_PRIVATE)
             val idUser = sharedPreferences.getString("ID_USER", "") ?: ""
 
             val fragmentTujuan = LanggananPelangganFragment()
@@ -56,24 +62,21 @@ class HomePelangganFragment : Fragment() {
             bundle.putString("ARG_USER_ID", idUser.trim())
             fragmentTujuan.arguments = bundle
 
-            // Dapatkan ID layout container secara dinamis dan aman
             val containerId = (view.parent as? View)?.id ?: R.id.fragment_container
 
             activity?.supportFragmentManager?.beginTransaction()?.apply {
                 replace(containerId, fragmentTujuan)
-                addToBackStack(null) // Biarkan user bisa menekan tombol back HP untuk kembali ke Home
+                addToBackStack(null)
                 commit()
             }
         }
 
         view.findViewById<Button>(R.id.btnBayar).setOnClickListener {
-            // Alihkan otomatis ke menu tagihan yang ada di bottom nav
             val containerId = (view.parent as? View)?.id ?: R.id.fragment_container
             activity?.supportFragmentManager?.beginTransaction()?.replace(containerId, TagihanPelangganFragment())?.commit()
         }
 
         view.findViewById<Button>(R.id.btnKomplain).setOnClickListener {
-            // Alihkan otomatis ke menu keluhan
             val containerId = (view.parent as? View)?.id ?: R.id.fragment_container
             activity?.supportFragmentManager?.beginTransaction()?.replace(containerId, KeluhanPelangganFragment())?.commit()
         }
@@ -97,6 +100,39 @@ class HomePelangganFragment : Fragment() {
                 progressBar.visibility = View.GONE
                 try {
                     val jsonObject = JSONObject(response)
+
+                    // 🚀 FORCE FIX: Ekstraksi nama user dari struktur array data dashboard Laravel secara menyeluruh
+                    if (jsonObject.has("user")) {
+                        val userObj = jsonObject.getJSONObject("user")
+                        val namaDb = userObj.optString("name", userObj.optString("nama", ""))
+                        if (namaDb.isNotEmpty() && namaDb != "null") {
+                            tvWelcome.text = "Halo, $namaDb!"
+                            sharedPreferences.edit().putString("NAMA_USER", namaDb).apply()
+                        }
+                    } else if (jsonObject.has("pelanggan")) {
+                        val pelObj = jsonObject.getJSONObject("pelanggan")
+                        val namaDb = pelObj.optString("name", pelObj.optString("nama", ""))
+                        if (namaDb.isNotEmpty() && namaDb != "null") {
+                            tvWelcome.text = "Halo, $namaDb!"
+                            sharedPreferences.edit().putString("NAMA_USER", namaDb).apply()
+                        }
+                    }
+
+                    // JIKA SANGKUT: Coba deteksi nama dari relasi langgananAktif yang membawa objek user
+                    if (tvWelcome.text.contains("Pelanggan")) {
+                        val arrayLangganan = jsonObject.optJSONArray("langgananAktif")
+                        if (arrayLangganan != null && arrayLangganan.length() > 0) {
+                            val firstItem = arrayLangganan.getJSONObject(0)
+                            if (firstItem.has("pelanggan")) {
+                                val userRelasi = firstItem.getJSONObject("pelanggan")
+                                val namaRelasi = userRelasi.optString("name", userRelasi.optString("nama", ""))
+                                if (namaRelasi.isNotEmpty() && namaRelasi != "null") {
+                                    tvWelcome.text = "Halo, $namaRelasi!"
+                                    sharedPreferences.edit().putString("NAMA_USER", namaRelasi).apply()
+                                }
+                            }
+                        }
+                    }
 
                     // 1. Sinkronisasi Angka Statistik Atas
                     val totalHutang = jsonObject.optLong("tagihanBelumLunas", 0)

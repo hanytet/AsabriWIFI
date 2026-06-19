@@ -3,6 +3,7 @@ package com.polinema.asabriwifi
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -40,10 +41,37 @@ class PelangganFragment : Fragment() {
         rvPelanggan.adapter = pelangganAdapter
 
         fabTambah.setOnClickListener { tampilkanDialogForm(null) }
-        pelangganAdapter.onItemClick = { pelanggan -> tampilkanDialogForm(pelanggan) }
 
         fetchDataPelanggan()
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        // 🚀 REGISTRASI PENTING: Mendaftarkan RecyclerView ke sistem ContextMenu Android
+        registerForContextMenu(rvPelanggan)
+    }
+
+    // 🚀 LOGIKA MENANGKAP OPSI KLIK MENU: Eksekusi Edit (101) atau Hapus (102) dari adapter
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        val position = pelangganAdapter.positionTerpilih
+        if (position == -1 || position >= listPelanggan.size) return false
+
+        val pelanggan = listPelanggan[position]
+
+        return when (item.itemId) {
+            101 -> { // Pilihan Edit Pelanggan
+                tampilkanDialogForm(pelanggan)
+                true
+            }
+            102 -> { // Pilihan Hapus Pelanggan
+                try {
+                    konfirmasiHapus(pelanggan.getString("id"))
+                } catch (e: Exception) { e.printStackTrace() }
+                true
+            }
+            else -> super.onContextItemSelected(item)
+        }
     }
 
     private fun tampilkanDialogForm(pelangganLama: JSONObject?) {
@@ -112,7 +140,6 @@ class PelangganFragment : Fragment() {
             .setTitle("Hapus Pelanggan")
             .setMessage("Yakin ingin menghapus pelanggan ini?")
             .setPositiveButton("Ya, Hapus") { _, _ ->
-                // 🚀 FIXED: Bersihkan URL murni tanpa query string ?aksi=hapus
                 val url = ApiConfig.BASE_URL + "pelanggan"
                 val stringRequest = object : StringRequest(Request.Method.POST, url,
                     { response ->
@@ -126,7 +153,6 @@ class PelangganFragment : Fragment() {
                 ) {
                     override fun getParams(): MutableMap<String, String> {
                         val params = HashMap<String, String>()
-                        // 🚀 FIXED: Masukkan aksi hapus ke dalam body data POST
                         params["aksi"] = "hapus"
                         params["id"] = id
                         return params
@@ -139,7 +165,6 @@ class PelangganFragment : Fragment() {
 
     private fun kirimDataKeLaravel(isEdit: Boolean, id: String, name: String, email: String, pass: String, no_hp: String, alamat: String, statusPilihan: String) {
         val aksi = if (isEdit) "edit" else "tambah"
-        // 🚀 FIXED: URL bersih tanpa query string agar tidak di-strip oleh Volley
         val url = ApiConfig.BASE_URL + "pelanggan"
 
         val stringRequest = object : StringRequest(Request.Method.POST, url,
@@ -162,7 +187,6 @@ class PelangganFragment : Fragment() {
         ) {
             override fun getParams(): MutableMap<String, String> {
                 val params = HashMap<String, String>()
-                // 🚀 FIXED: Amankan pengiriman aksi manipulasi database
                 params["aksi"] = aksi
                 if (isEdit) {
                     params["id"] = id
@@ -180,7 +204,6 @@ class PelangganFragment : Fragment() {
     }
 
     private fun updateStatusKhusus(id: String, statusPilihan: String) {
-        // 🚀 FIXED: URL bersih tanpa query string
         val url = ApiConfig.BASE_URL + "pelanggan"
         val stringRequest = object : StringRequest(Request.Method.POST, url,
             { response ->
@@ -191,7 +214,6 @@ class PelangganFragment : Fragment() {
         ) {
             override fun getParams(): MutableMap<String, String> {
                 val params = HashMap<String, String>()
-                // 🚀 FIXED: Set aksi toggle_status melalui form-data POST
                 params["aksi"] = "toggle_status"
                 params["id"] = id
                 params["status"] = statusPilihan
@@ -202,7 +224,6 @@ class PelangganFragment : Fragment() {
     }
 
     private fun fetchDataPelanggan() {
-        // 🚀 AMAN: GET request diperbolehkan memakai query string secara natural
         val url = ApiConfig.BASE_URL + "pelanggan?aksi=tampil"
 
         val stringRequest = StringRequest(Request.Method.GET, url,

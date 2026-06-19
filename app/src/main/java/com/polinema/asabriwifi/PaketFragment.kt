@@ -57,7 +57,7 @@ class PaketFragment : Fragment() {
         return view
     }
 
-    // 2. MENANGKAP PILIHAN DARI CONTEXT MENU RESMI ANDROID
+
     override fun onContextItemSelected(item: MenuItem): Boolean {
         val position = paketAdapter.positionTerpilih
         if (position >= 0 && position < listPaket.size) {
@@ -65,11 +65,11 @@ class PaketFragment : Fragment() {
             val paketId = paketTerpilih.optString("id", "")
 
             when (item.itemId) {
-                201 -> { // Pilihan Edit Paket
+                201 -> {
                     tampilkanDialogForm(paketTerpilih)
                     return true
                 }
-                202 -> { // Pilihan Hapus Paket
+                202 -> {
                     konfirmasiHapus(paketId)
                     return true
                 }

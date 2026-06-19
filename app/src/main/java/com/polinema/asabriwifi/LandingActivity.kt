@@ -46,9 +46,7 @@ class LandingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // =========================================================================
-        // 1. SINKRONISASI PROTEKSI SESI (Pencegah Mental & Auto-Logout Multi-Role)
-        // =========================================================================
+
         val sharedPreferences = getSharedPreferences("AsabriPrefs", Context.MODE_PRIVATE)
         if (sharedPreferences.getBoolean("IS_LOGGED_IN", false)) {
             val role = sharedPreferences.getString("ROLE", "") ?: ""
@@ -93,9 +91,7 @@ class LandingActivity : AppCompatActivity() {
         }
         rvPaket.adapter = adapter
 
-        // =========================================================================
-        // 2. KONTROL ENGINE PEMUTAR VIDEO PROMO (Auto-Play, Pause-Resume Toggle, & Infinite Loop)
-        // =========================================================================
+
         try {
             val pathVideo = "android.resource://" + packageName + "/" + R.raw.promo_asabri
             videoPromo.setVideoURI(Uri.parse(pathVideo))
@@ -103,15 +99,15 @@ class LandingActivity : AppCompatActivity() {
             videoPromo.setOnPreparedListener { mediaPlayer ->
                 mediaPlayer.isLooping = true
 
-                // Mengaktifkan output suara ke volume penuh (1f, 1f) sejak awal pemutaran
+
                 mediaPlayer.setVolume(1f, 1f)
 
-                // Hilangkan filter overlay gelap karena video diputar dengan suara normal
+
                 videoOverlay.visibility = View.GONE
                 videoPromo.start()
             }
 
-            // IMPLEMENTASI TOGGLE PLAY / PAUSE VIDEO
+
             val videoClickListener = View.OnClickListener {
                 if (videoPromo.isPlaying) {
                     videoPromo.pause()
@@ -240,7 +236,6 @@ class LandingActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         mapView.onResume()
-        // PENTING: Jangan paksa auto-start kembali di sini jika user sengaja melakukan pause sebelum meminimalkan aplikasi
     }
 
     override fun onPause() {

@@ -20,7 +20,9 @@ class KeluhanPelangganFragment : Fragment() {
     private lateinit var rvKeluhan: RecyclerView
     private lateinit var progressBar: ProgressBar
     private lateinit var spinnerKategori: Spinner
-    private lateinit var etIsi: EditText
+
+    // 🚀 UBAH: Dari EditText menjadi AutoCompleteTextView
+    private lateinit var etIsi: AutoCompleteTextView
     private lateinit var btnKirim: Button
 
     private val listKeluhan = ArrayList<JSONObject>()
@@ -39,8 +41,24 @@ class KeluhanPelangganFragment : Fragment() {
         rvKeluhan = view.findViewById(R.id.rvKeluhan)
         progressBar = view.findViewById(R.id.progressBarKeluhan)
         spinnerKategori = view.findViewById(R.id.spinKategori)
+
+
         etIsi = view.findViewById(R.id.etIsiKeluhan)
         btnKirim = view.findViewById(R.id.btnKirimKeluhan)
+
+
+        val daftarSaranKendala = arrayOf(
+            "WiFi terhubung tapi tidak ada internet (No Internet)",
+            "Lampu indikator LOS berkedip merah",
+            "Sinyal WiFi tidak muncul / tidak terdeteksi",
+            "Koneksi internet sangat lambat / lemot",
+            "Router WiFi mati total tidak ada lampu menyala",
+            "Gagal login ke jaringan WiFi Asabri",
+            "Kabel FO (Fiber Optik) putus terkena pohon"
+        )
+
+        val autoAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, daftarSaranKendala)
+        etIsi.setAdapter(autoAdapter)
 
         rvKeluhan.layoutManager = LinearLayoutManager(requireContext())
         adapter = KeluhanPelangganAdapter(listKeluhan)
@@ -55,7 +73,6 @@ class KeluhanPelangganFragment : Fragment() {
         progressBar.visibility = View.VISIBLE
         val idUser = requireContext().getSharedPreferences("AsabriPrefs", Context.MODE_PRIVATE).getString("ID_USER", "")
 
-        // FIXED SINKRONISASI: Menembak endpoint keluhan dengan aksi tampil_pelanggan
         val url = ApiConfig.BASE_URL + "keluhan?aksi=tampil_pelanggan&user_id=$idUser"
 
         val stringRequest = StringRequest(Request.Method.GET, url,
@@ -103,7 +120,6 @@ class KeluhanPelangganFragment : Fragment() {
         val noHp = prefs.getString("NO_HP", "081234567890")
         val alamat = prefs.getString("ALAMAT", "Alamat Pelanggan Asabri")
 
-        // FIXED SINKRONISASI: Mengubah rute endpoint ke keluhan
         val url = ApiConfig.BASE_URL + "keluhan"
 
         val postRequest = object : StringRequest(Method.POST, url,

@@ -38,7 +38,7 @@
                 android:background="@android:drawable/btn_dropdown"
                 android:layout_marginBottom="12dp"/>
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/etIsiKeluhan"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -48,6 +48,7 @@
                 android:lines="4"
                 android:textSize="14sp"
                 android:padding="12dp"
+                android:completionThreshold="1"
                 android:background="@android:drawable/editbox_background_normal"
                 android:layout_marginBottom="16dp"/>
 

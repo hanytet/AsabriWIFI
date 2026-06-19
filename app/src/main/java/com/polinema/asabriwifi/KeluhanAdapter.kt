@@ -61,7 +61,7 @@ class KeluhanAdapter(private val listKeluhan: ArrayList<JSONObject>) : RecyclerV
             val status = item.optString("status", "baru").lowercase()
             holder.tvStatus.text = status.replace("_", " ").uppercase()
 
-            // Pewarnaan status badge dinamis
+
             when (status) {
                 "baru" -> {
                     holder.tvStatus.setTextColor(Color.parseColor("#F57F17"))

@@ -108,14 +108,11 @@ class PaketPelangganFragment : Fragment() {
                         if (!redirectUrl.isNullOrEmpty()) {
                             Toast.makeText(requireContext(), "Mengalihkan ke Midtrans...", Toast.LENGTH_SHORT).show()
 
-                            // 🚀 FIXED 1: Luncurkan gerbang kasir Midtrans Snap secara mandiri di Task Baru
+
                             val browserIntent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse(redirectUrl))
                             browserIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                             startActivity(browserIntent)
 
-                            // 🚀 FIXED 2: JANGAN panggil finish() atau ganti activity secara instan di sini!
-                            // Biarkan user menyelesaikan transaksi di browser. Ketika mereka menekan tombol back,
-                            // mereka akan kembali ke aplikasi secara alami.
                         } else {
                             Toast.makeText(requireContext(), "Tautan pembayaran tidak ditemukan dari server", Toast.LENGTH_LONG).show()
                         }
@@ -133,7 +130,6 @@ class PaketPelangganFragment : Fragment() {
                 val response = error.networkResponse
                 if (response != null) {
                     try {
-                        // 🚀 DETEKTIF EROR: Bongkar pesan penolakan asli jika token gagal digenerate oleh Laravel
                         val dataEror = String(response.data)
                         val jsonEror = JSONObject(dataEror)
                         val pesanEror = jsonEror.optString("pesan", "Eror Kode: ${response.statusCode}")

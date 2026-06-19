@@ -151,12 +151,12 @@ class ProfilePelangganFragment : Fragment() {
         }
 
         progressBar.visibility = View.VISIBLE
-        btnGetGPS.text = "⏳ Mengunci Posisi..."
+        btnGetGPS.text = "Mengunci Posisi..."
 
         fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
             .addOnSuccessListener { location ->
                 progressBar.visibility = View.GONE
-                btnGetGPS.text = "📍 Kunci Koordinat via GPS Device"
+                btnGetGPS.text = "Kunci Koordinat via GPS Device"
                 if (location != null) {
                     latSimpan = location.latitude.toString()
                     lngSimpan = location.longitude.toString()
@@ -172,7 +172,7 @@ class ProfilePelangganFragment : Fragment() {
             }
             .addOnFailureListener {
                 progressBar.visibility = View.GONE
-                btnGetGPS.text = "📍 Kunci Koordinat via GPS Device"
+                btnGetGPS.text = "Kunci Koordinat via GPS Device"
             }
     }
 

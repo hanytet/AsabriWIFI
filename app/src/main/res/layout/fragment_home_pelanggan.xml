@@ -30,7 +30,7 @@
                     android:id="@+id/tvWelcome"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Halo, Calistarihan"
+                    android:text="Halo, Pelanggan"
                     android:textSize="24sp"
                     android:textStyle="bold"
                     android:textColor="#0F172A" />

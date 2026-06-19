@@ -1,7 +1,9 @@
 package com.polinema.asabriwifi
 
 import android.os.Bundle
+import android.view.ContextMenu
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
@@ -38,10 +40,8 @@ class PenggunaFragment : Fragment() {
 
         rvPengguna.layoutManager = LinearLayoutManager(requireContext())
 
-        // Callback adapter dengan ekspresi lambda yang aman
-        adapter = PenggunaAdapter(listUser) { userTerpilih ->
-            bukaDialogOpsi(userTerpilih)
-        }
+        // 🚀 Bersihkan inisialisasi tanpa parameter lambda lama
+        adapter = PenggunaAdapter(listUser)
         rvPengguna.adapter = adapter
 
         etCari.setOnEditorActionListener { _, actionId, _ ->
@@ -53,6 +53,36 @@ class PenggunaFragment : Fragment() {
 
         fetchPengguna()
         return v
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        // 🚀 DAFTARKAN RECYCLERVIEW KE CONTEXT MENU SYSTEM
+        registerForContextMenu(rvPengguna)
+    }
+
+    // 🚀 LOGIKA MENANGKAP PILIHAN MENU: Menggantikan fungsi dialog opsi lama secara penuh
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        val position = adapter.positionTerpilih
+        if (position == -1 || position >= listUser.size) return false
+
+        val user = listUser[position]
+
+        return when (item.itemId) {
+            201 -> { // Edit Informasi
+                bukaDialogEdit(user)
+                true
+            }
+            202 -> { // Reset Password
+                konfirmasiAksi("reset_password", user.optString("id"), "Reset password user ini?")
+                true
+            }
+            203 -> { // Hapus Akun
+                konfirmasiAksi("hapus", user.optString("id"), "Hapus akun user ini permanen?")
+                true
+            }
+            else -> super.onContextItemSelected(item)
+        }
     }
 
     private fun fetchPengguna() {
@@ -80,31 +110,31 @@ class PenggunaFragment : Fragment() {
         VolleySingleton.getInstance(requireContext()).addToRequestQueue(req)
     }
 
-    private fun bukaDialogOpsi(user: JSONObject) {
-        val opsi = arrayOf("Edit Informasi Pengguna", "Reset Password ke Default", "Hapus Akun Pengguna")
-        AlertDialog.Builder(requireContext())
-            .setTitle(user.optString("name", "Pilih Tindakan"))
-            .setItems(opsi) { _, which ->
-                when (which) {
-                    0 -> bukaDialogEdit(user)
-                    1 -> konfirmasiAksi("reset_password", user.optString("id"), "Reset password user ini?")
-                    2 -> konfirmasiAksi("hapus", user.optString("id"), "Hapus akun user ini permanen?")
-                }
-            }.show()
-    }
-
     private fun bukaDialogEdit(user: JSONObject) {
         val form = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_edit_pengguna, null)
         val edNama = form.findViewById<EditText>(R.id.edEditNama)
+        val edEmail = form.findViewById<EditText>(R.id.edEditEmail)
+        val edNik = form.findViewById<EditText>(R.id.edEditNik)
         val spRole = form.findViewById<Spinner>(R.id.spEditRole)
 
+        // Set teks data awal dari JSON model bawaan database
         edNama.setText(user.optString("name"))
+        edEmail.setText(user.optString("email"))
 
-        val opsiRole = arrayOf("admin", "pelanggan", "secondadmin", "teknisi")
+        val nikAwal = user.optString("nik", "")
+        edNik.setText(if (nikAwal != "null") nikAwal else "")
+
+        // 🚀 FIXED: Menghapus "secondadmin" dari pilihan array list role
+        val opsiRole = arrayOf("admin", "pelanggan", "teknisi")
         val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, opsiRole)
         spRole.adapter = spinnerAdapter
 
-        val roleSekarang = user.optString("role", "pelanggan")
+        // Deteksi role saat ini (jika user lama secondadmin, otomatis default ke pelanggan atau sesuaikan)
+        var roleSekarang = user.optString("role", "pelanggan").lowercase()
+        if (roleSekarang == "secondadmin") {
+            roleSekarang = "admin" // Fallback jika ada data lama yang tersangkut role tersebut
+        }
+
         val indexRole = opsiRole.indexOf(roleSekarang)
         if (indexRole >= 0) spRole.setSelection(indexRole)
 
@@ -112,19 +142,21 @@ class PenggunaFragment : Fragment() {
             .setTitle("Edit Akun Pengguna")
             .setView(form)
             .setPositiveButton("Simpan Updates") { _, _ ->
-                val namaBaru = edNama.text.toString()
+                val namaBaru = edNama.text.toString().trim()
+                val emailBaru = edEmail.text.toString().trim()
+                val nikBaru = edNik.text.toString().trim()
                 val roleBaru = spRole.selectedItem.toString()
 
-                if (namaBaru.isNotEmpty()) {
+                if (namaBaru.isEmpty() || emailBaru.isEmpty()) {
+                    Toast.makeText(requireContext(), "Nama dan Email tidak boleh kosong!", Toast.LENGTH_SHORT).show()
+                } else {
                     eksekusiSimpanEdit(
                         user.optString("id"),
                         namaBaru,
-                        user.optString("email"),
-                        user.optString("nik"),
+                        emailBaru,
+                        nikBaru,
                         roleBaru
                     )
-                } else {
-                    Toast.makeText(requireContext(), "Nama tidak boleh kosong!", Toast.LENGTH_SHORT).show()
                 }
             }
             .setNegativeButton("Batal", null)
@@ -142,7 +174,6 @@ class PenggunaFragment : Fragment() {
                 Toast.makeText(requireContext(), "❌ Gagal memperbarui data", Toast.LENGTH_SHORT).show()
             }
         ) {
-            // 👇 FIXED: Menggunakan keyword bawaan Kotlin 'override fun' 👇
             override fun getParams(): MutableMap<String, String> {
                 return hashMapOf("id" to id, "name" to nama, "email" to email, "nik" to nik, "role" to role)
             }
@@ -163,7 +194,6 @@ class PenggunaFragment : Fragment() {
                         Toast.makeText(requireContext(), "❌ Gagal mengeksekusi tindakan", Toast.LENGTH_SHORT).show()
                     }
                 ) {
-                    // 👇 FIXED: Menggunakan keyword bawaan Kotlin 'override fun' 👇
                     override fun getParams(): MutableMap<String, String> {
                         return hashMapOf("id" to id)
                     }
